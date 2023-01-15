@@ -12,10 +12,7 @@ import lk.ijse.dep9.exception.ResponseStatusException;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,7 +87,34 @@ public class MemberServlet extends NewHttpServlet {
         }
     }
 
-    private void loadMembersByPage(int size, int page, HttpServletResponse response) {
+    private void loadMembersByPage(int size, int page, HttpServletResponse response) throws IOException {
+        try (Connection connection = pool.getConnection()) {
+            Statement stmCount = connection.createStatement();
+            ResultSet rstCount = stmCount.executeQuery("SELECT COUNT(id) FROM Member");
+            rstCount.next();
+            int totalMembers = rstCount.getInt(1);
+            response.addIntHeader("X-Total-Count", totalMembers);
+
+            PreparedStatement stmData = connection.prepareStatement("SELECT * FROM Member LIMIT ? OFFSET ?");
+            stmData.setInt(1, size);
+            stmData.setInt(2, (page - 1) * size);
+            ResultSet rstData = stmData.executeQuery();
+
+            ArrayList<MemberDTO> paginatedMembers = new ArrayList<>();
+            while (rstData.next()) {
+                String id = rstData.getString("id");
+                String name = rstData.getString("name");
+                String address = rstData.getString("address");
+                String contact = rstData.getString("contact");
+                MemberDTO dto = new MemberDTO(id, name, address, contact);
+                paginatedMembers.add(dto);
+            }
+
+            response.setContentType("application/json");
+            JsonbBuilder.create().toJson(paginatedMembers, response.getWriter());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
