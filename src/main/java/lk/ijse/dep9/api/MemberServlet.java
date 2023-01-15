@@ -11,7 +11,7 @@ import java.io.IOException;
 public class MemberServlet extends NewHttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        response.getWriter().println("Hello");
     }
 
     @Override
