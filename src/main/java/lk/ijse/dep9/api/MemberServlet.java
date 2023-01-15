@@ -288,7 +288,7 @@ public class MemberServlet extends NewHttpServlet {
             deleteMember(uUID, response);
         }
         else {
-            throw new ResponseStatusException(501);
+            throw new ResponseStatusException(400, "Invalid member UUID");
         }
     }
 
@@ -301,12 +301,44 @@ public class MemberServlet extends NewHttpServlet {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             }
             else {
-                throw new ResponseStatusException(404, "Invalid member id");
+                throw new ResponseStatusException(404, "Member doesn't exist at the database");
             }
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+    }
+
+    @Override
+    protected void doPatch(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getPathInfo() == null || request.getPathInfo().equals("/")) {
+            throw new ResponseStatusException(501);
+        }
+        String pathInfo = request.getPathInfo();
+        Matcher matcher = Pattern.compile("^/([A-Fa-f\\d]{8}(-[A-Fa-f\\d]{4}){3}-[A-Fa-f\\d]{12})/?$").matcher(pathInfo);
+        if (matcher.matches()) {
+            if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
+                throw new ResponseStatusException(400, "Invalid Content Type");
+            }
+            try {
+                String uUID = matcher.group(1);
+                MemberDTO memberDTO = JsonbBuilder.create().fromJson(request.getReader(), MemberDTO.class);
+                if (!uUID.equals(memberDTO.getId())) {
+                    throw new ResponseStatusException(400, "JSON object member id is not match with the url pattern member id");
+                }
+                updateMember(memberDTO, response);
+            }
+            catch (JsonbException e) {
+                throw new ResponseStatusException(400, "Member JSON format is incorrect");
+            }
+        }
+        else {
+            throw new ResponseStatusException(400, "Invalid member UUID");
+        }
+    }
+
+    private void updateMember(MemberDTO memberDTO, HttpServletResponse response) {
 
     }
 }
