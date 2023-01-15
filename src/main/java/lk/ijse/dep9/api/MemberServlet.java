@@ -189,7 +189,29 @@ public class MemberServlet extends NewHttpServlet {
 
     }
 
-    private void getMemberDetails(String uUID, HttpServletResponse response) {
+    private void getMemberDetails(String memberId, HttpServletResponse response) throws IOException {
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement stm = connection.prepareStatement("SELECT * FROM Member WHERE id=?");
+            stm.setString(1, memberId);
+            ResultSet rst = stm.executeQuery();
+
+            if (rst.next()) {
+                String id = rst.getString("id");
+                String name = rst.getString("name");
+                String address = rst.getString("address");
+                String contact = rst.getString("contact");
+                MemberDTO member = new MemberDTO(id, name, address, contact);
+
+                response.setContentType("application/json");
+                JsonbBuilder.create().toJson(member, response.getWriter());
+            }
+            else {
+                throw new ResponseStatusException(404, "Member UUID doesn't exist in the database");
+            }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
