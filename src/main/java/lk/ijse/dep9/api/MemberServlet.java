@@ -293,6 +293,20 @@ public class MemberServlet extends NewHttpServlet {
     }
 
     private void deleteMember(String memberId, HttpServletResponse response) {
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement stm = connection.prepareStatement("DELETE FROM Member WHERE id=?");
+            stm.setString(1, memberId);
+            int affectedRows = stm.executeUpdate();
+            if (affectedRows == 1) {
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+            }
+            else {
+                throw new ResponseStatusException(404, "Invalid member id");
+            }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }
