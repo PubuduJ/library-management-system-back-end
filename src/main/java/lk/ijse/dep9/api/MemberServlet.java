@@ -3,6 +3,7 @@ package lk.ijse.dep9.api;
 import jakarta.annotation.Resource;
 import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
+import jakarta.json.bind.JsonbException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -14,6 +15,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -217,6 +219,27 @@ public class MemberServlet extends NewHttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getPathInfo() == null || request.getPathInfo().equals("/")) {
+            if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
+                throw new ResponseStatusException(400, "Invalid Content Type");
+            }
+            else {
+                try {
+                    MemberDTO memberDTO = JsonbBuilder.create().fromJson(request.getReader(), MemberDTO.class);
+                    System.out.println(memberDTO.toString());
+                    createNewMember(memberDTO, response);
+                }
+                catch (JsonbException e) {
+                    throw new ResponseStatusException(400, "Member JSON format is incorrect");
+                }
+            }
+        }
+        else {
+            throw new ResponseStatusException(501);
+        }
 
+    }
+
+    private void createNewMember(MemberDTO memberDTO, HttpServletResponse response) throws IOException {
     }
 }
