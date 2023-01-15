@@ -118,7 +118,31 @@ public class MemberServlet extends NewHttpServlet {
 
     }
 
-    private void searchMembers(String query, HttpServletResponse response) {
+    private void searchMembers(String query, HttpServletResponse response) throws IOException {
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement stm = connection.prepareStatement("SELECT * FROM Member WHERE id LIKE ? OR name LIKE ? OR address LIKE ? OR contact LIKE ?");
+            query = "%" + query + "%";
+            stm.setString(1, query);
+            stm.setString(2, query);
+            stm.setString(3, query);
+            stm.setString(4, query);
+            ResultSet rst = stm.executeQuery();
+
+            ArrayList<MemberDTO> searchedMembers = new ArrayList<>();
+            while (rst.next()) {
+                String id = rst.getString("id");
+                String name = rst.getString("name");
+                String address = rst.getString("address");
+                String contact = rst.getString("contact");
+                MemberDTO dto = new MemberDTO(id, name, address, contact);
+                searchedMembers.add(dto);
+            }
+
+            response.setContentType("application/json");
+            JsonbBuilder.create().toJson(searchedMembers, response.getWriter());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
