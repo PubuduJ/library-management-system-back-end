@@ -275,4 +275,24 @@ public class MemberServlet extends NewHttpServlet {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getPathInfo() == null || request.getPathInfo().equals("/")) {
+            throw new ResponseStatusException(501);
+        }
+        String pathInfo = request.getPathInfo();
+        Matcher matcher = Pattern.compile("^/([A-Fa-f\\d]{8}(-[A-Fa-f\\d]{4}){3}-[A-Fa-f\\d]{12})/?$").matcher(pathInfo);
+        if (matcher.matches()) {
+            String uUID = matcher.group(1);
+            deleteMember(uUID, response);
+        }
+        else {
+            throw new ResponseStatusException(501);
+        }
+    }
+
+    private void deleteMember(String memberId, HttpServletResponse response) {
+
+    }
 }
