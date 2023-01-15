@@ -112,7 +112,8 @@ public class MemberServlet extends NewHttpServlet {
 
             response.setContentType("application/json");
             JsonbBuilder.create().toJson(paginatedMembers, response.getWriter());
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
@@ -140,13 +141,51 @@ public class MemberServlet extends NewHttpServlet {
 
             response.setContentType("application/json");
             JsonbBuilder.create().toJson(searchedMembers, response.getWriter());
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    private void searchMembersByPage(String query, int size, int page, HttpServletResponse response) {
+    private void searchMembersByPage(String query, int size, int page, HttpServletResponse response) throws IOException {
+        try (Connection connection = pool.getConnection()) {
+            query = "%" + query + "%";
+            PreparedStatement stmCount = connection.prepareStatement("SELECT COUNT(id) FROM Member WHERE id LIKE ? OR name LIKE ? OR address LIKE ? OR contact LIKE ?");
+            stmCount.setString(1, query);
+            stmCount.setString(2, query);
+            stmCount.setString(3, query);
+            stmCount.setString(4, query);
+            ResultSet rstCount = stmCount.executeQuery();
+            rstCount.next();
+            int searchedMemberCount = rstCount.getInt(1);
+            response.addIntHeader("X-Total-Count", searchedMemberCount);
+
+            PreparedStatement stmData = connection.prepareStatement("SELECT * FROM Member WHERE id LIKE ? OR name LIKE ? OR address LIKE ? OR contact LIKE ? LIMIT ? OFFSET ?");
+            stmData.setString(1,query);
+            stmData.setString(2,query);
+            stmData.setString(3,query);
+            stmData.setString(4,query);
+            stmData.setInt(5,size);
+            stmData.setInt(6,(page - 1) * size);
+            ResultSet rstData = stmData.executeQuery();
+
+            ArrayList<MemberDTO> searchPaginatedMembers = new ArrayList<>();
+            while (rstData.next()) {
+                String id = rstData.getString("id");
+                String name = rstData.getString("name");
+                String address = rstData.getString("address");
+                String contact = rstData.getString("contact");
+                MemberDTO dto = new MemberDTO(id, name, address, contact);
+                searchPaginatedMembers.add(dto);
+            }
+
+            response.setContentType("application/json");
+            JsonbBuilder.create().toJson(searchPaginatedMembers, response.getWriter());
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
