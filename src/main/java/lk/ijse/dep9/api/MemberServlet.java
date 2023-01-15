@@ -1,17 +1,23 @@
 package lk.ijse.dep9.api;
 
+import jakarta.annotation.Resource;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import lk.ijse.dep9.api.util.NewHttpServlet;
 import lk.ijse.dep9.exception.ResponseStatusException;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @WebServlet(name = "member-servlet", value = "/members/*")
 public class MemberServlet extends NewHttpServlet {
+
+    @Resource(lookup = "java:/comp/env/jdbc/lms_db")
+    private DataSource pool;
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getPathInfo() == null || request.getPathInfo().equals("/")) {
