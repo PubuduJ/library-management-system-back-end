@@ -241,5 +241,38 @@ public class MemberServlet extends NewHttpServlet {
     }
 
     private void createNewMember(MemberDTO memberDTO, HttpServletResponse response) throws IOException {
+        if (memberDTO.getId() != null) {
+            throw new ResponseStatusException(400, "Member cannot have an ID, ID is auto generated");
+        }
+        else if (memberDTO.getName() == null || !memberDTO.getName().matches("^[A-Za-z][A-Za-z. ]+$")) {
+            throw new ResponseStatusException(400, "Member name is empty or invalid");
+        }
+        else if (memberDTO.getAddress() == null || !memberDTO.getAddress().matches("^[A-Za-z\\d][A-Za-z\\d-|/# ,.:;\\\\]+$")) {
+            throw new ResponseStatusException(400, "Member address is empty or invalid");
+        }
+        else if (memberDTO.getContact() == null || !memberDTO.getContact().matches("\\d{3}-\\d{7}")) {
+            throw new ResponseStatusException(400, "Member contact is empty or invalid");
+        }
+        try (Connection connection = pool.getConnection()) {
+            memberDTO.setId(UUID.randomUUID().toString());
+            PreparedStatement stm = connection.prepareStatement("INSERT INTO Member (id, name, address, contact) VALUES (?, ?, ?, ?)");
+            stm.setString(1, memberDTO.getId());
+            stm.setString(2, memberDTO.getName());
+            stm.setString(3, memberDTO.getAddress());
+            stm.setString(4, memberDTO.getContact());
+
+            int affectedRows = stm.executeUpdate();
+            if (affectedRows == 1) {
+                response.setStatus(HttpServletResponse.SC_CREATED);
+                response.setContentType("application/json");
+                JsonbBuilder.create().toJson(memberDTO, response.getWriter());
+            }
+            else {
+                throw new ResponseStatusException(500);
+            }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
