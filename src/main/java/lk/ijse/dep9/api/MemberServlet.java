@@ -338,7 +338,36 @@ public class MemberServlet extends NewHttpServlet {
         }
     }
 
-    private void updateMember(MemberDTO memberDTO, HttpServletResponse response) {
+    private void updateMember(MemberDTO memberDTO, HttpServletResponse response) throws IOException {
+        if (memberDTO.getName() == null || !memberDTO.getName().matches("^[A-Za-z][A-Za-z. ]+$")) {
+            throw new ResponseStatusException(400, "Member name is empty or invalid");
+        }
+        else if (memberDTO.getAddress() == null || !memberDTO.getAddress().matches("^[A-Za-z\\d][A-Za-z\\d-|/# ,.:;\\\\]+$")) {
+            throw new ResponseStatusException(400, "Member address is empty or invalid");
+        }
+        else if (memberDTO.getContact() == null || !memberDTO.getContact().matches("\\d{3}-\\d{7}")) {
+            throw new ResponseStatusException(400, "Member contact is empty or invalid");
+        }
+
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement stm = connection.prepareStatement("UPDATE Member SET name=?, address=?, contact=? WHERE id=?");
+            stm.setString(1, memberDTO.getName());
+            stm.setString(2, memberDTO.getAddress());
+            stm.setString(3, memberDTO.getContact());
+            stm.setString(4, memberDTO.getId());
+
+            int affectedRows = stm.executeUpdate();
+            if (affectedRows == 1) {
+                response.setStatus(HttpServletResponse.SC_CREATED);
+                response.setContentType("application/json");
+                JsonbBuilder.create().toJson(memberDTO, response.getWriter());
+            }
+            else {
+                throw new ResponseStatusException(404, "Member doesn't exist");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }
