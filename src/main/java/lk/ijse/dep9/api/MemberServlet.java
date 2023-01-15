@@ -45,7 +45,8 @@ public class MemberServlet extends NewHttpServlet {
             else if (query == null && size != null && page != null) {
                 if (!size.matches("\\d+") || !page.matches("\\d+")) {
                     throw new ResponseStatusException(400, "Invalid page or size");
-                } else {
+                }
+                else {
                     loadMembersByPage(Integer.parseInt(size), Integer.parseInt(page), response);
                 }
             }
