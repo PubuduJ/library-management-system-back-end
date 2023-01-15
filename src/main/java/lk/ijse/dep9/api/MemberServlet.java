@@ -7,6 +7,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import lk.ijse.dep9.api.util.NewHttpServlet;
+import lk.ijse.dep9.dto.MemberDTO;
 import lk.ijse.dep9.exception.ResponseStatusException;
 
 import javax.sql.DataSource;
@@ -66,13 +67,25 @@ public class MemberServlet extends NewHttpServlet {
         }
     }
 
-    private void loadAllMembers(HttpServletResponse response) {
+    private void loadAllMembers(HttpServletResponse response) throws IOException {
         try (Connection connection = pool.getConnection()) {
             Statement stm = connection.createStatement();
             ResultSet rst = stm.executeQuery("SELECT * FROM Member");
+            ArrayList<MemberDTO> allMembers = new ArrayList<>();
 
+            while (rst.next()) {
+                String id = rst.getString("id");
+                String name = rst.getString("name");
+                String address = rst.getString("address");
+                String contact = rst.getString("contact");
+                MemberDTO dto = new MemberDTO(id, name, address, contact);
+                allMembers.add(dto);
+            }
 
-        } catch (SQLException e) {
+            response.setContentType("application/json");
+            JsonbBuilder.create().toJson(allMembers, response.getWriter());
+        }
+        catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
