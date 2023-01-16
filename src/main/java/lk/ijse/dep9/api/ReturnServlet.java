@@ -9,10 +9,13 @@ import jakarta.servlet.annotation.*;
 import lk.ijse.dep9.api.util.NewHttpServlet;
 import lk.ijse.dep9.dto.IssueNoteDTO;
 import lk.ijse.dep9.dto.ReturnDTO;
+import lk.ijse.dep9.dto.ReturnItemDTO;
 import lk.ijse.dep9.exception.ResponseStatusException;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 @WebServlet(name = "return-servlet", value = "/returns/*")
 public class ReturnServlet extends NewHttpServlet {
@@ -42,6 +45,24 @@ public class ReturnServlet extends NewHttpServlet {
     }
 
     private void addReturnItems(ReturnDTO returnDTO, HttpServletResponse response) {
-
+        if (returnDTO.getMemberId() == null || !returnDTO.getMemberId().matches("^[A-Fa-f\\d]{8}(-[A-Fa-f\\d]{4}){3}-[A-Fa-f\\d]{12}$")) {
+            throw new ResponseStatusException(400, "Member ID is invalid or empty");
+        }
+        else if (returnDTO.getReturnItems().isEmpty()) {
+            throw new ResponseStatusException(400, "No return items found");
+        }
+        Set<Integer> checkDuplicates = new HashSet<>();
+        for (ReturnItemDTO returnItem : returnDTO.getReturnItems()) {
+            if (returnItem == null) {
+                throw new ResponseStatusException(400, "Null items have been found in the list");
+            }
+            else if (returnItem.getIssueNoteId() == null || returnItem.getIsbn() == null || !returnItem.getIsbn().matches("^\\d{3}-\\d-\\d{2}-\\d{6}-\\d$")) {
+                throw new ResponseStatusException(400, "Some items are invalid");
+            }
+            checkDuplicates.add(returnItem.getIssueNoteId());
+        }
+        if (checkDuplicates.size() != returnDTO.getReturnItems().size()) {
+            throw new ResponseStatusException(400, "Duplicate issue note Ids are found");
+        }
     }
 }
