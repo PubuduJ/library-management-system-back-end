@@ -153,11 +153,70 @@ public class BookServlet extends NewHttpServlet {
     }
 
     private void searchBooksByPage(String query, int size, int page, HttpServletResponse response) throws IOException {
-        response.getWriter().println("search books by page");
+        try (Connection connection = pool.getConnection()) {
+            query = "%" + query + "%";
+            PreparedStatement stmCount = connection.prepareStatement("SELECT COUNT(isbn) FROM Book WHERE isbn LIKE ? OR title LIKE ? OR author LIKE ? OR copies LIKE ?");
+            stmCount.setString(1, query);
+            stmCount.setString(2, query);
+            stmCount.setString(3, query);
+            stmCount.setString(4, query);
+            ResultSet rstCount = stmCount.executeQuery();
+            rstCount.next();
+            int searchedBookCount = rstCount.getInt(1);
+            response.addIntHeader("X-Total-Count", searchedBookCount);
+
+            PreparedStatement stmData = connection.prepareStatement("SELECT * FROM Book WHERE isbn LIKE ? OR title LIKE ? OR author LIKE ? OR copies LIKE ? LIMIT ? OFFSET ?");
+            stmData.setString(1,query);
+            stmData.setString(2,query);
+            stmData.setString(3,query);
+            stmData.setString(4,query);
+            stmData.setInt(5,size);
+            stmData.setInt(6,(page - 1) * size);
+            ResultSet rstData = stmData.executeQuery();
+
+            ArrayList<BookDTO> searchPaginatedBooks = new ArrayList<>();
+            while (rstData.next()) {
+                String isbn = rstData.getString("isbn");
+                String title = rstData.getString("title");
+                String author = rstData.getString("author");
+                int copies = rstData.getInt("copies");
+                BookDTO dto = new BookDTO(isbn, title, author, copies);
+                searchPaginatedBooks.add(dto);
+            }
+
+            response.setContentType("application/json");
+            JsonbBuilder.create().toJson(searchPaginatedBooks, response.getWriter());
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
-    private void getBookDetails(String isbn, HttpServletResponse response) throws IOException {
-        response.getWriter().println("get books details");
+    private void getBookDetails(String isbnNumber, HttpServletResponse response) throws IOException {
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement stm = connection.prepareStatement("SELECT * FROM Book WHERE isbn=?");
+            stm.setString(1, isbnNumber);
+            ResultSet rst = stm.executeQuery();
+
+            if (rst.next()) {
+                String isbn = rst.getString("isbn");
+                String title = rst.getString("title");
+                String author = rst.getString("author");
+                int copies = rst.getInt("copies");
+                BookDTO book = new BookDTO(isbn, title, author, copies);
+
+                response.setContentType("application/json");
+                JsonbBuilder.create().toJson(book, response.getWriter());
+            }
+            else {
+                throw new ResponseStatusException(404, "Book ISBN doesn't exist in the database");
+            }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
