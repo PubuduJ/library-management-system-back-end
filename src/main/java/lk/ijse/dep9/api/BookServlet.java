@@ -12,10 +12,7 @@ import lk.ijse.dep9.exception.ResponseStatusException;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -94,7 +91,36 @@ public class BookServlet extends NewHttpServlet {
     }
 
     private void loadBooksByPage(int size, int page, HttpServletResponse response) throws IOException {
-        response.getWriter().println("load books by page");
+        try (Connection connection = pool.getConnection()) {
+            Statement stmCount = connection.createStatement();
+            ResultSet rstCount = stmCount.executeQuery("SELECT COUNT(isbn) FROM Book");
+            rstCount.next();
+            int totalBooks = rstCount.getInt(1);
+            response.addIntHeader("X-Total-Count", totalBooks);
+
+            PreparedStatement stmData = connection.prepareStatement("SELECT * FROM Book LIMIT ? OFFSET ?");
+            stmData.setInt(1, size);
+            stmData.setInt(2, (page - 1) * size);
+            ResultSet rstData = stmData.executeQuery();
+
+            ArrayList<BookDTO> paginatedBooks = new ArrayList<>();
+
+            while (rstData.next()) {
+                String isbn = rstData.getString("isbn");
+                String title = rstData.getString("title");
+                String author = rstData.getString("author");
+                int copies = rstData.getInt("copies");
+                BookDTO dto = new BookDTO(isbn, title, author, copies);
+                paginatedBooks.add(dto);
+            }
+
+            response.setContentType("application/json");
+            JsonbBuilder.create().toJson(paginatedBooks, response.getWriter());
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void searchBooks(String query, HttpServletResponse response) throws IOException {
