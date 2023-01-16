@@ -12,6 +12,8 @@ import lk.ijse.dep9.exception.ResponseStatusException;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 @WebServlet(name = "issue-note-servlet", value = "/issue-notes/*")
 public class IssueNoteServlet extends NewHttpServlet {
@@ -41,6 +43,22 @@ public class IssueNoteServlet extends NewHttpServlet {
     }
 
     private void createIssueNote(IssueNoteDTO issueNote, HttpServletResponse response) {
-
+        if (issueNote.getMemberId() == null || !issueNote.getMemberId().matches("^[A-Fa-f\\d]{8}(-[A-Fa-f\\d]{4}){3}-[A-Fa-f\\d]{12}$")) {
+            throw new ResponseStatusException(400, "Member id is empty or invalid");
+        }
+        else if (issueNote.getBooks().isEmpty()) {
+            throw new ResponseStatusException(400, "Can't place an issue note without books");
+        }
+        else if (issueNote.getBooks().size() > 3) {
+            throw new ResponseStatusException(400, "Cannot issue more than 3 books");
+        }
+        Set<String> checkDuplicates = new HashSet<>();
+        for (String isbn : issueNote.getBooks()) {
+            if (isbn == null || !isbn.matches("^\\d{3}-\\d-\\d{2}-\\d{6}-\\d$")) throw new JsonbException("Invalid isbn");
+            checkDuplicates.add(isbn);
+        }
+        if (checkDuplicates.size() != issueNote.getBooks().size()) {
+            throw new ResponseStatusException(400, "Duplicate isbn are found");
+        }
     }
 }
