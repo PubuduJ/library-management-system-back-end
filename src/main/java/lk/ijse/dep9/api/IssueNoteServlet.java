@@ -12,6 +12,7 @@ import lk.ijse.dep9.exception.ResponseStatusException;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -60,5 +61,60 @@ public class IssueNoteServlet extends NewHttpServlet {
         if (checkDuplicates.size() != issueNote.getBooks().size()) {
             throw new ResponseStatusException(400, "Duplicate isbn are found");
         }
+
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement stmMemberExist = connection.prepareStatement("SELECT id FROM Member WHERE id = ?");
+            stmMemberExist.setString(1, issueNote.getMemberId());
+            ResultSet rstMemberExist = stmMemberExist.executeQuery();
+            if (!rstMemberExist.next()) {
+                throw new ResponseStatusException(400, "Member doesn't exist");
+            }
+
+            PreparedStatement stmOne = connection.prepareStatement("SELECT B.isbn, B.title, B.copies, ((B.copies - COUNT(II.isbn)) > 0) AS availability\n" +
+                    "FROM IssueItem II\n" +
+                    "INNER JOIN `Return` R ON NOT (II.issue_id = R.issue_id AND II.isbn = R.isbn)\n" +
+                    "RIGHT JOIN Book B ON II.isbn = B.isbn\n" +
+                    "WHERE B.isbn = ? GROUP BY B.isbn");
+
+            PreparedStatement stmTwo = connection.prepareStatement("SELECT *, B.title\n" +
+                    "FROM IssueItem II\n" +
+                    "INNER JOIN `Return` R ON NOT (II.issue_id = R.issue_id and II.isbn = R.isbn)\n" +
+                    "INNER JOIN Book B ON II.isbn = B.isbn\n" +
+                    "INNER JOIN IssueNote `IN` ON II.issue_id = `IN`.id\n" +
+                    "WHERE `IN`.member_id = ? AND B.isbn = ?");
+
+            stmTwo.setString(1, issueNote.getMemberId());
+
+            for (String isbn : issueNote.getBooks()) {
+                stmOne.setString(1, isbn);
+                stmTwo.setString(2, isbn);
+
+                ResultSet rstOne = stmOne.executeQuery();
+                ResultSet rstTwo = stmTwo.executeQuery();
+
+                if (!rstOne.next()) throw new ResponseStatusException(400, "Book doesn't exist");
+                boolean availability = rstOne.getBoolean("availability");
+                if (!availability) throw new ResponseStatusException(400, "ISBN: " + isbn + " book is not available at the moment");
+                if (rstTwo.next()) throw new ResponseStatusException(400, "Book has been already issued to a member");
+            }
+
+            PreparedStatement stmAvailable = connection.prepareStatement("SELECT M.name, 3 - COUNT(R.issue_id) AS available\n" +
+                    "FROM IssueNote `IN`\n" +
+                    "INNER JOIN IssueItem II ON `IN`.id = II.issue_id\n" +
+                    "INNER JOIN `Return` R ON NOT (II.issue_id = R.issue_id and II.isbn = R.isbn)\n" +
+                    "RIGHT JOIN Member M on `IN`.member_id = M.id\n" +
+                    "WHERE M.id = ? GROUP BY M.id");
+            stmAvailable.setString(1,issueNote.getMemberId());
+            ResultSet rstAvailable = stmAvailable.executeQuery();
+            rstAvailable.next();
+            int available = rstAvailable.getInt("available");
+            if (issueNote.getBooks().size() > available) throw new ResponseStatusException(400, "Member can borrow only " + available + " books");
+
+
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
