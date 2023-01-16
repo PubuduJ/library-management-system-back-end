@@ -14,6 +14,11 @@ import lk.ijse.dep9.exception.ResponseStatusException;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -64,5 +69,21 @@ public class ReturnServlet extends NewHttpServlet {
         if (checkDuplicates.size() != returnDTO.getReturnItems().size()) {
             throw new ResponseStatusException(400, "Duplicate issue note Ids are found");
         }
+
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement stm = connection.prepareStatement("SELECT *\n" +
+                    "FROM IssueItem II\n" +
+                    "INNER JOIN IssueNote `IN` on II.issue_id = `IN`.id\n" +
+                    "WHERE `IN`.member_id = ? AND II.issue_id = ? AND II.isbn = ?");
+            stm.setString(1, returnDTO.getMemberId());
+
+            PreparedStatement stm2 = connection.prepareStatement("SELECT * FROM `Return` WHERE isbn = ? AND issue_id = ?");
+            PreparedStatement stm3 = connection.prepareStatement("INSERT INTO `Return` (date, issue_id, isbn) VALUES (?, ?, ?)");
+
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
