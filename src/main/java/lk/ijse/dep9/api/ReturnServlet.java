@@ -49,7 +49,7 @@ public class ReturnServlet extends NewHttpServlet {
         }
     }
 
-    private void addReturnItems(ReturnDTO returnDTO, HttpServletResponse response) {
+    private void addReturnItems(ReturnDTO returnDTO, HttpServletResponse response) throws IOException {
         if (returnDTO.getMemberId() == null || !returnDTO.getMemberId().matches("^[A-Fa-f\\d]{8}(-[A-Fa-f\\d]{4}){3}-[A-Fa-f\\d]{12}$")) {
             throw new ResponseStatusException(400, "Member ID is invalid or empty");
         }
@@ -71,31 +71,60 @@ public class ReturnServlet extends NewHttpServlet {
         }
 
         try (Connection connection = pool.getConnection()) {
-            PreparedStatement stm = connection.prepareStatement("SELECT *\n" +
+            PreparedStatement stmOne = connection.prepareStatement("SELECT *\n" +
                     "FROM IssueItem II\n" +
                     "INNER JOIN IssueNote `IN` on II.issue_id = `IN`.id\n" +
                     "WHERE `IN`.member_id = ? AND II.issue_id = ? AND II.isbn = ?");
-            stm.setString(1, returnDTO.getMemberId());
+            stmOne.setString(1, returnDTO.getMemberId());
 
-            PreparedStatement stm2 = connection.prepareStatement("SELECT * FROM `Return` WHERE isbn = ? AND issue_id = ?");
-            PreparedStatement stm3 = connection.prepareStatement("INSERT INTO `Return` (date, issue_id, isbn) VALUES (?, ?, ?)");
+            PreparedStatement stmTwo = connection.prepareStatement("SELECT * FROM `Return` WHERE isbn = ? AND issue_id = ?");
+            PreparedStatement stmThree = connection.prepareStatement("INSERT INTO `Return` (date, issue_id, isbn) VALUES (?, ?, ?)");
 
             try {
                 connection.setAutoCommit(false);
+                for (ReturnItemDTO returnItem : returnDTO.getReturnItems()) {
+                    stmOne.setInt(2, returnItem.getIssueNoteId());
+                    stmOne.setString(3, returnItem.getIsbn());
 
+                    stmTwo.setInt(1, returnItem.getIssueNoteId());
+                    stmTwo.setString(2, returnItem.getIsbn());
+
+                    if (!stmOne.executeQuery().next()) {
+                        throw new ResponseStatusException(400, String.format("Either member: %s, issue note id: %s, isbn: %s don't exist or this return item is not belong to this member",
+                                returnDTO.getMemberId(),
+                                returnItem.getIssueNoteId(),
+                                returnItem.getIsbn()));
+                    }
+                    if (stmTwo.executeQuery().next()) {
+                        throw new ResponseStatusException(400, "This " + returnItem.getIsbn() +  " have been already returned");
+                    }
+
+                    stmThree.setDate(1, Date.valueOf(LocalDate.now()));
+                    stmThree.setInt(2, returnItem.getIssueNoteId());
+                    stmThree.setString(3, returnItem.getIsbn());
+
+                    int affectedRows = stmThree.executeUpdate();
+                    if (affectedRows != 1) {
+                        throw new SQLException("Fail to insert a return item");
+                    }
+                }
+
+                connection.commit();
+                response.setStatus(HttpServletResponse.SC_CREATED);
+                response.setContentType("application/json");
+                JsonbBuilder.create().toJson(returnDTO, response.getWriter());
             }
             catch (Throwable t) {
                 connection.rollback();
+                if (t instanceof ResponseStatusException) throw t;
                 throw new RuntimeException(t);
             }
             finally {
                 connection.setAutoCommit(true);
             }
-
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 }
