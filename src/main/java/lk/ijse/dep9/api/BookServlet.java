@@ -241,9 +241,41 @@ public class BookServlet extends NewHttpServlet {
         else {
             throw new ResponseStatusException(501);
         }
-
     }
 
     private void saveNewBook(BookDTO bookDTO, HttpServletResponse response) throws IOException {
+        if (bookDTO.getIsbn() == null || !bookDTO.getIsbn().matches("^\\d{3}-\\d-\\d{2}-\\d{6}-\\d$")) {
+            throw new ResponseStatusException(400, "ISBN is empty or invalid");
+        }
+        else if (bookDTO.getTitle() == null || !bookDTO.getTitle().matches("^[A-Za-z][A-Za-z. ]+$")) {
+            throw new ResponseStatusException(400, "Title is empty or invalid");
+        }
+        else if (bookDTO.getAuthor() == null || !bookDTO.getAuthor().matches("^[A-Za-z][A-Za-z. ]+$")) {
+            throw new ResponseStatusException(400, "Author is empty or invalid");
+        }
+        else if (bookDTO.getCopies() == null || bookDTO.getCopies() < 1) {
+            throw new ResponseStatusException(400, "Copies are empty or invalid");
+        }
+
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement stm = connection.prepareStatement("INSERT INTO Book (isbn, title, author, copies) VALUES (?, ?, ?, ?)");
+            stm.setString(1, bookDTO.getIsbn());
+            stm.setString(2, bookDTO.getTitle());
+            stm.setString(3, bookDTO.getAuthor());
+            stm.setInt(4, bookDTO.getCopies());
+
+            int affectedRows = stm.executeUpdate();
+            if (affectedRows == 1) {
+                response.setStatus(HttpServletResponse.SC_CREATED);
+                response.setContentType("application/json");
+                JsonbBuilder.create().toJson(bookDTO, response.getWriter());
+            }
+            else {
+                throw new ResponseStatusException(500);
+            }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
