@@ -124,7 +124,32 @@ public class BookServlet extends NewHttpServlet {
     }
 
     private void searchBooks(String query, HttpServletResponse response) throws IOException {
-        response.getWriter().println("search books");
+        try (Connection connection = pool.getConnection()) {
+            PreparedStatement stm = connection.prepareStatement("SELECT * FROM Book WHERE isbn LIKE ? OR title LIKE ? OR author LIKE ? OR copies LIKE ?");
+            query = "%" + query + "%";
+            stm.setString(1, query);
+            stm.setString(2, query);
+            stm.setString(3, query);
+            stm.setString(4, query);
+            ResultSet rst = stm.executeQuery();
+
+            ArrayList<BookDTO> searchedBooks = new ArrayList<>();
+            while (rst.next()) {
+                String isbn = rst.getString("isbn");
+                String title = rst.getString("title");
+                String author = rst.getString("author");
+                int copies = rst.getInt("copies");
+                BookDTO dto = new BookDTO(isbn, title, author, copies);
+                searchedBooks.add(dto);
+            }
+
+            response.setContentType("application/json");
+            JsonbBuilder.create().toJson(searchedBooks, response.getWriter());
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void searchBooksByPage(String query, int size, int page, HttpServletResponse response) throws IOException {
