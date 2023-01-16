@@ -1,14 +1,22 @@
 package lk.ijse.dep9.api;
 
 import jakarta.annotation.Resource;
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import lk.ijse.dep9.api.util.NewHttpServlet;
+import lk.ijse.dep9.dto.BookDTO;
 import lk.ijse.dep9.exception.ResponseStatusException;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -62,7 +70,27 @@ public class BookServlet extends NewHttpServlet {
     }
 
     private void loadAllBooks(HttpServletResponse response) throws IOException {
-        response.getWriter().println("load all books");
+        try (Connection connection = pool.getConnection()) {
+            Statement stm = connection.createStatement();
+            ResultSet rst = stm.executeQuery("SELECT * FROM Book");
+            ArrayList<BookDTO> allBooks = new ArrayList<>();
+
+            while (rst.next()) {
+                String isbn = rst.getString("isbn");
+                String title = rst.getString("title");
+                String author = rst.getString("author");
+                int copies = rst.getInt("copies");
+                BookDTO dto = new BookDTO(isbn, title, author, copies);
+                allBooks.add(dto);
+            }
+
+            response.setContentType("application/json");
+            JsonbBuilder.create().toJson(allBooks, response.getWriter());
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private void loadBooksByPage(int size, int page, HttpServletResponse response) throws IOException {
