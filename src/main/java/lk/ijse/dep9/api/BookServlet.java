@@ -278,4 +278,37 @@ public class BookServlet extends NewHttpServlet {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    protected void doPatch(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getPathInfo() == null || request.getPathInfo().equals("/")) {
+            throw new ResponseStatusException(501);
+        }
+        String pathInfo = request.getPathInfo();
+        Matcher matcher = Pattern.compile("^/(\\d{3}-\\d-\\d{2}-\\d{6}-\\d)/?$").matcher(pathInfo);
+        if (matcher.matches()) {
+            if (request.getContentType() == null || !request.getContentType().startsWith("application/json")) {
+                throw new ResponseStatusException(400, "Invalid Content Type");
+            }
+            try {
+                String isbn = matcher.group(1);
+                BookDTO bookDTO = JsonbBuilder.create().fromJson(request.getReader(), BookDTO.class);
+                if (!isbn.equals(bookDTO.getIsbn())) {
+                    throw new ResponseStatusException(400, "JSON object Book isbn is not match with the url pattern book isbn");
+                }
+                updateBook(bookDTO, response);
+            }
+            catch (JsonbException e) {
+                throw new ResponseStatusException(400, "Member JSON format is incorrect");
+            }
+        }
+        else {
+            throw new ResponseStatusException(400, "Invalid book isbn");
+        }
+    }
+
+    private void updateBook(BookDTO bookDTO, HttpServletResponse response) {
+
+    }
+
 }
