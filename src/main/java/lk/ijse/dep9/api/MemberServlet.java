@@ -1,7 +1,6 @@
 package lk.ijse.dep9.api;
 
 import jakarta.annotation.Resource;
-import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.JsonbException;
 import jakarta.servlet.*;

@@ -1,7 +1,6 @@
 package lk.ijse.dep9.api;
 
 import jakarta.annotation.Resource;
-import jakarta.json.bind.Jsonb;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.json.bind.JsonbException;
 import jakarta.servlet.*;
@@ -9,14 +8,12 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import lk.ijse.dep9.api.util.NewHttpServlet;
 import lk.ijse.dep9.dto.BookDTO;
-import lk.ijse.dep9.dto.MemberDTO;
 import lk.ijse.dep9.exception.ResponseStatusException;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
