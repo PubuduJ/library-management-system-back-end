@@ -227,7 +227,6 @@ public class MemberServlet extends NewHttpServlet {
             else {
                 try {
                     MemberDTO memberDTO = JsonbBuilder.create().fromJson(request.getReader(), MemberDTO.class);
-                    System.out.println(memberDTO.toString());
                     createNewMember(memberDTO, response);
                 }
                 catch (JsonbException e) {
@@ -238,7 +237,6 @@ public class MemberServlet extends NewHttpServlet {
         else {
             throw new ResponseStatusException(501);
         }
-
     }
 
     private void createNewMember(MemberDTO memberDTO, HttpServletResponse response) throws IOException {
