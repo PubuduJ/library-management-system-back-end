@@ -9,7 +9,6 @@ import jakarta.servlet.annotation.*;
 import lk.ijse.dep9.api.util.NewHttpServlet;
 import lk.ijse.dep9.dto.BookDTO;
 import lk.ijse.dep9.exception.ResponseStatusException;
-
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;

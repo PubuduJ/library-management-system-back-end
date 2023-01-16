@@ -5,12 +5,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import java.io.IOException;
 
 public class CorsFilter extends HttpFilter {
 
     private String[] origins;
+
     @Override
     public void init() throws ServletException {
         String origin = getFilterConfig().getInitParameter("origin-locations");
