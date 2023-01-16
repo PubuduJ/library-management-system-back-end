@@ -13,6 +13,7 @@ import lk.ijse.dep9.exception.ResponseStatusException;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -113,7 +114,33 @@ public class IssueNoteServlet extends NewHttpServlet {
             /* Begin transactions */
             try {
                 connection.setAutoCommit(false);
+                PreparedStatement stmIssueNote = connection.prepareStatement("INSERT INTO IssueNote (date, member_id) VALUES (?, ?)",
+                        Statement.RETURN_GENERATED_KEYS);
+                stmIssueNote.setDate(1, Date.valueOf(LocalDate.now()));
+                stmIssueNote.setString(2, issueNote.getMemberId());
+                if (stmIssueNote.executeUpdate() != 1) {
+                    throw new SQLException("Fail to insert the issue note");
+                }
+                ResultSet generatedKeys = stmIssueNote.getGeneratedKeys();
+                generatedKeys.next();
+                int issueNoteId = generatedKeys.getInt(1);
 
+                PreparedStatement stmIssueItem = connection.prepareStatement("INSERT INTO IssueItem (issue_id, isbn) VALUES (?, ?)");
+                stmIssueItem.setInt(1, issueNoteId);
+                for (String isbn : issueNote.getBooks()) {
+                    stmIssueItem.setString(2, isbn);
+                    if (stmIssueItem.executeUpdate() != 1) {
+                        throw new SQLException("Fail to insert an issue item");
+                    }
+                }
+
+                connection.commit();
+
+                issueNote.setId(issueNoteId);
+                issueNote.setDate(LocalDate.now());
+                response.setStatus(HttpServletResponse.SC_CREATED);
+                response.setContentType("application/json");
+                JsonbBuilder.create().toJson(issueNote, response.getWriter());
             }
             catch (Throwable t) {
                 connection.rollback();
