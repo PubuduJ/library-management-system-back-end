@@ -110,11 +110,21 @@ public class IssueNoteServlet extends NewHttpServlet {
             int available = rstAvailable.getInt("available");
             if (issueNote.getBooks().size() > available) throw new ResponseStatusException(400, "Member can borrow only " + available + " books");
 
+            /* Begin transactions */
+            try {
+                connection.setAutoCommit(false);
 
+            }
+            catch (Throwable t) {
+                connection.rollback();
+                throw new RuntimeException(t);
+            }
+            finally {
+                connection.setAutoCommit(true);
+            }
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 }
