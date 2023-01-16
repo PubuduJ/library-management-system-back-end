@@ -80,6 +80,18 @@ public class ReturnServlet extends NewHttpServlet {
             PreparedStatement stm2 = connection.prepareStatement("SELECT * FROM `Return` WHERE isbn = ? AND issue_id = ?");
             PreparedStatement stm3 = connection.prepareStatement("INSERT INTO `Return` (date, issue_id, isbn) VALUES (?, ?, ?)");
 
+            try {
+                connection.setAutoCommit(false);
+
+            }
+            catch (Throwable t) {
+                connection.rollback();
+                throw new RuntimeException(t);
+            }
+            finally {
+                connection.setAutoCommit(true);
+            }
+
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
