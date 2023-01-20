@@ -18,7 +18,6 @@ public class IssueNoteDAOImpl implements IssueNoteDAO {
 
     @Override
     public long count() {
-
         try {
             PreparedStatement stm = connection.prepareStatement("SELECT COUNT(id) FROM IssueNote");
             ResultSet rst = stm.executeQuery();
