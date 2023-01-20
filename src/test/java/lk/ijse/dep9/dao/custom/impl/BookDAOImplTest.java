@@ -2,6 +2,7 @@ package lk.ijse.dep9.dao.custom.impl;
 
 import lk.ijse.dep9.dao.exception.ConstraintViolationException;
 import lk.ijse.dep9.entity.Book;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +32,11 @@ class BookDAOImplTest {
         Statement stm = connection.createStatement();
         stm.execute(dbScript);
         this.bookDAOImpl = new BookDAOImpl(connection);
+    }
+
+    @AfterEach
+    void tearDown() throws SQLException {
+        connection.close();
     }
 
     @Test
