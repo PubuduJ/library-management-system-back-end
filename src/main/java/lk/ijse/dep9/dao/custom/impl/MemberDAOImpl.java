@@ -3,7 +3,6 @@ package lk.ijse.dep9.dao.custom.impl;
 import lk.ijse.dep9.dao.custom.MemberDAO;
 import lk.ijse.dep9.dao.exception.ConstraintViolationException;
 import lk.ijse.dep9.entity.Member;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

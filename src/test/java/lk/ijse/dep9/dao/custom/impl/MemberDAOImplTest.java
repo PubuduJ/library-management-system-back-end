@@ -66,7 +66,7 @@ class MemberDAOImplTest {
     @Test
     void findById() {
         Optional<Member> member = memberDAOImpl.findById("2714641a-301e-43d5-9d31-ad916d075ba6");
-        System.out.println(member.get());
+        assertTrue(member.isPresent());
     }
 
     @Test
