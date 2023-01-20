@@ -1,7 +1,6 @@
 package lk.ijse.dep9.dao.custom.impl;
 
 import lk.ijse.dep9.dao.custom.QueryDAO;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
