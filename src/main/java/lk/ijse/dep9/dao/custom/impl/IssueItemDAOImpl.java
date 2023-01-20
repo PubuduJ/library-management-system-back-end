@@ -4,8 +4,6 @@ import lk.ijse.dep9.dao.custom.IssueItemDAO;
 import lk.ijse.dep9.dao.exception.ConstraintViolationException;
 import lk.ijse.dep9.entity.IssueItem;
 import lk.ijse.dep9.entity.IssueItemPK;
-import lk.ijse.dep9.entity.IssueNote;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

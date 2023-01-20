@@ -2,10 +2,8 @@ package lk.ijse.dep9.dao.custom.impl;
 
 import lk.ijse.dep9.dao.custom.ReturnDAO;
 import lk.ijse.dep9.dao.exception.ConstraintViolationException;
-import lk.ijse.dep9.entity.IssueItem;
 import lk.ijse.dep9.entity.Return;
 import lk.ijse.dep9.entity.ReturnPK;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
