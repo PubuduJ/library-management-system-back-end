@@ -99,7 +99,6 @@ public class IssueItemDAOImpl implements IssueItemDAO {
         catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
