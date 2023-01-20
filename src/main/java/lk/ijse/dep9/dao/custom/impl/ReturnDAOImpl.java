@@ -36,8 +36,8 @@ public class ReturnDAOImpl implements ReturnDAO {
     public boolean existsById(ReturnPK pk) {
         try {
             PreparedStatement stm = connection.prepareStatement("SELECT isbn FROM `Return` WHERE issue_id=? AND isbn=?");
-            stm.setInt(2, pk.getIssueId());
-            stm.setString(1, pk.getIsbn());
+            stm.setInt(1, pk.getIssueId());
+            stm.setString(2, pk.getIsbn());
             ResultSet rst = stm.executeQuery();
             return rst.next();
         }

@@ -73,4 +73,3 @@ INSERT INTO `Return`
 VALUES ('2022-11-14', 1, '4567-4567'),
        ('2022-11-15', 10, '1234-7891');
 
-DELETE FROM IssueItem WHERE isbn = '1234-7891' AND issue_id = 100;
