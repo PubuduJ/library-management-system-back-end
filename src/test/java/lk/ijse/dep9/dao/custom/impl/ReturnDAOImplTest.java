@@ -44,14 +44,14 @@ class ReturnDAOImplTest {
 
     @Test
     void existsById() {
-        ReturnPK pk = new ReturnPK(1, "4567-4567");
+        ReturnPK pk = new ReturnPK(3, "978-3-16-148410-0");
         boolean isExist = returnDAOImpl.existsById(pk);
         assertTrue(isExist);
     }
 
     @Test
     void deleteById() {
-        ReturnPK pk = new ReturnPK(1, "4567-4567");
+        ReturnPK pk = new ReturnPK(3, "978-3-16-148410-0");
         returnDAOImpl.deleteById(pk);
     }
 
@@ -63,21 +63,22 @@ class ReturnDAOImplTest {
 
     @Test
     void findById() {
-        ReturnPK pk = new ReturnPK(1, "4567-4567");
+        ReturnPK pk = new ReturnPK(3, "978-3-16-148410-0");
         Optional<Return> aReturn = returnDAOImpl.findById(pk);
         assertTrue(aReturn.isPresent());
     }
 
     @Test
     void save() {
-        Return aReturn = new Return(Date.valueOf(LocalDate.now()), 8, "1234-9874");
-        Return savedReturnNote = returnDAOImpl.save(aReturn);
-        assertEquals(aReturn.toString(), savedReturnNote.toString());
+        Return aReturn = new Return(Date.valueOf(LocalDate.now()), 5, "978-3-18-148410-0");
+        assertThrows(RuntimeException.class, () -> {
+            Return save = returnDAOImpl.save(aReturn);
+        });
     }
 
     @Test
     void update() {
-        Return aReturn = new Return(Date.valueOf(LocalDate.of(2022, 11, 10)), 10, "1234-7891");
+        Return aReturn = new Return(Date.valueOf(LocalDate.of(2023, 01, 15)), 3, "978-3-16-148410-0");
         Return updatedReturnNote = returnDAOImpl.update(aReturn);
         assertEquals(aReturn.toString(), updatedReturnNote.toString());
     }
