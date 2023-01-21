@@ -42,19 +42,19 @@ class IssueItemDAOImplTest {
     @Test
     void count() {
         long actualCount = issueItemDAOImpl.count();
-        assertEquals(9, actualCount);
+        assertEquals(4, actualCount);
     }
 
     @Test
     void existsById() {
-        IssueItemPK pk = new IssueItemPK(3, "1234-1234");
+        IssueItemPK pk = new IssueItemPK(3, "978-3-16-148410-0");
         boolean isExist = issueItemDAOImpl.existsById(pk);
         assertTrue(isExist);
     }
 
     @Test
     void deleteById() {
-        IssueItemPK pk = new IssueItemPK(10, "1234-7891");
+        IssueItemPK pk = new IssueItemPK(3, "978-3-16-148410-0");
         assertThrows(ConstraintViolationException.class, () -> {
             issueItemDAOImpl.deleteById(pk);
         });
@@ -63,19 +63,19 @@ class IssueItemDAOImplTest {
     @Test
     void findAll() {
         List<IssueItem> list = issueItemDAOImpl.findAll();
-        assertEquals(9, list.size());
+        assertEquals(4, list.size());
     }
 
     @Test
     void findById() {
-        IssueItemPK pk = new IssueItemPK(10, "1234-7891");
+        IssueItemPK pk = new IssueItemPK(4, "978-3-16-148410-2");
         Optional<IssueItem> issueItem = issueItemDAOImpl.findById(pk);
         assertTrue(issueItem.isPresent());
     }
 
     @Test
     void save() {
-        IssueItem issueItem = new IssueItem(11, "5623-0001");
+        IssueItem issueItem = new IssueItem(4, "978-3-16-148412-6");
         assertThrows(RuntimeException.class, () -> {
             IssueItem savedIssueItem = issueItemDAOImpl.save(issueItem);
         });
