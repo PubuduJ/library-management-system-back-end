@@ -6,9 +6,9 @@ CREATE TABLE IF NOT EXISTS Member (
 );
 
 INSERT INTO Member
-VALUES ('104ccff3-c584-4782-a582-8a06479b46f6','Nuwan Ramindu','Galle','078-1234567'),
-       ('2714641a-301e-43d5-9d31-ad916d075ba6','Kasun Sampath','Galle','077-1234567'),
-       ('2714641a-301e-43d5-9d31-ad916d075ba7','Tharindu','Panadura','011-1234567');
+VALUES ('104ccff3-c584-4782-a582-8a06479b4600','Pubudu Janith','Horana','071-7845123'),
+       ('2714641a-301e-43d5-9d31-ad916d075700','Supun Sudeera','Kaluthara','077-8525693'),
+       ('2714641a-301e-43d5-9d31-ad916d075800','Kasun Subasinghe','Panadura','072-4512369');
 
 CREATE TABLE IF NOT EXISTS Book (
     isbn VARCHAR(25) PRIMARY KEY ,
@@ -18,15 +18,14 @@ CREATE TABLE IF NOT EXISTS Book (
 );
 
 INSERT INTO Book
-VALUES ('1234-1234','Patterns of Enterprise Application Architecture','Martin Fowler',2),
-       ('1234-4567','Application Architecture','Microsoft',3),
-       ('1234-7891','Clean Code','Robert Cecil Martin',4),
-       ('1234-9874','Test','Test',1),
-       ('4567-1234','UML Distilled','Martin Fowler',1),
-       ('4567-4567','SQL Specification 2011','Ansi',1),
-       ('4567-7891','ECMAScript Specification 2022','ECMA Body',1),
-       ('7891-1234','Java Language Specification','James Gosling',1),
-       ('9874-1234','Effective Java 3','Prasad Sir',1);
+VALUES ('978-3-16-148410-0','Patterns of Enterprise Application Architecture','Martin Fowler',1),
+       ('978-3-16-148410-1','Application Architecture','Microsoft',2),
+       ('978-3-16-148410-2','Clean Code','Robert Martin',3),
+       ('978-3-16-148410-3','MongoDB Specification','MongoDB Inc',1),
+       ('978-3-16-148410-4','Introduction to Cloud Computing ','Martin Robert',4),
+       ('978-3-16-148410-5','ECMAScript Specification 2022','ECMA Body',1),
+       ('978-3-16-148410-6','Java Language Specification','James Gosling',2),
+       ('978-3-16-148410-7','Effective Java 3','Oracle Team',1);
 
 CREATE TABLE IF NOT EXISTS IssueNote (
     id INT PRIMARY KEY AUTO_INCREMENT ,
@@ -36,11 +35,8 @@ CREATE TABLE IF NOT EXISTS IssueNote (
 );
 
 INSERT INTO IssueNote
-VALUES (1,'2022-11-14','2714641a-301e-43d5-9d31-ad916d075ba7'),
-       (3,'2022-11-14','2714641a-301e-43d5-9d31-ad916d075ba7'),
-       (8,'2022-11-15','2714641a-301e-43d5-9d31-ad916d075ba7'),
-       (9,'2022-11-15','104ccff3-c584-4782-a582-8a06479b46f6'),
-       (10,'2022-11-15','104ccff3-c584-4782-a582-8a06479b46f6');
+VALUES (3,'2023-01-10','104ccff3-c584-4782-a582-8a06479b4600'),
+       (4,'2023-01-11','2714641a-301e-43d5-9d31-ad916d075700');
 
 CREATE TABLE IF NOT EXISTS IssueItem (
     issue_id INT NOT NULL ,
@@ -51,15 +47,10 @@ CREATE TABLE IF NOT EXISTS IssueItem (
 );
 
 INSERT INTO IssueItem
-VALUES (3,'1234-1234'),
-       (8,'1234-4567'),
-       (9,'1234-4567'),
-       (1,'1234-7891'),
-       (3,'1234-7891'),
-       (10,'1234-7891'),
-       (8,'1234-9874'),
-       (1,'4567-4567'),
-       (3,'7891-1234');
+VALUES (3,'978-3-16-148410-0'),
+       (3,'978-3-16-148410-1'),
+       (4,'978-3-16-148410-2'),
+       (4,'978-3-16-148410-3');
 
 CREATE TABLE IF NOT EXISTS `Return` (
     date DATE NOT NULL ,
@@ -70,8 +61,8 @@ CREATE TABLE IF NOT EXISTS `Return` (
 );
 
 INSERT INTO `Return`
-VALUES ('2022-11-14',1,'4567-4567'),
-       ('2022-11-15',10,'1234-7891');
+VALUES ('2023-01-14',3,'978-3-16-148410-0'),
+       ('2023-01-15',4,'978-3-16-148410-2');
 
 # Available copies of the relevant book
 SELECT (B.copies - COUNT(II.isbn) + COUNT(R.isbn)) AS `available_copies`
