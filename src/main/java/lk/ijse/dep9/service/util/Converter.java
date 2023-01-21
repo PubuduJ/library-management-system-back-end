@@ -4,11 +4,14 @@ import lk.ijse.dep9.dto.BookDTO;
 import lk.ijse.dep9.dto.IssueNoteDTO;
 import lk.ijse.dep9.dto.MemberDTO;
 import lk.ijse.dep9.entity.Book;
+import lk.ijse.dep9.entity.IssueItem;
 import lk.ijse.dep9.entity.IssueNote;
 import lk.ijse.dep9.entity.Member;
 import org.modelmapper.ModelMapper;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Converter {
 
@@ -36,5 +39,15 @@ public class Converter {
 
     public IssueNote toIssueNoteEntity(IssueNoteDTO issueNoteDTO) {
         return new IssueNote(issueNoteDTO.getId(), Date.valueOf(issueNoteDTO.getDate()),issueNoteDTO.getMemberId());
+    }
+
+    public List<IssueItem> toIssueItemEntityList(IssueNoteDTO issueNoteDTO) {
+        ArrayList<String> books = issueNoteDTO.getBooks();
+        ArrayList<IssueItem> issueItemList = new ArrayList<>();
+        for (String isbn : books) {
+            IssueItem issueItem = new IssueItem(issueNoteDTO.getId(), isbn);
+            issueItemList.add(issueItem);
+        }
+        return issueItemList;
     }
 }

@@ -4,6 +4,7 @@ import lk.ijse.dep9.dto.BookDTO;
 import lk.ijse.dep9.dto.IssueNoteDTO;
 import lk.ijse.dep9.dto.MemberDTO;
 import lk.ijse.dep9.entity.Book;
+import lk.ijse.dep9.entity.IssueItem;
 import lk.ijse.dep9.entity.IssueNote;
 import lk.ijse.dep9.entity.Member;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.modelmapper.ModelMapper;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -75,5 +77,19 @@ class ConverterTest {
         assertEquals(issueNote.getId(), issueNoteDTO.getId());
         assertEquals(issueNote.getDate().toString(), issueNoteDTO.getDate().toString());
         assertEquals(issueNote.getMemberId(), issueNoteDTO.getMemberId());
+    }
+
+    @Test
+    void toIssueItemEntityList() {
+        ArrayList<String> books = new ArrayList<>();
+        books.add("7896-5632");
+        books.add("8542-8963");
+        books.add("0213-4523");
+        IssueNoteDTO issueNoteDTO = new IssueNoteDTO(1, LocalDate.now(), "104ccff3-c584-4782-a582-8a06479b46f6", books);
+        List<IssueItem> issueItemList = converter.toIssueItemEntityList(issueNoteDTO);
+        for (int i = 0; i < issueItemList.size(); i++) {
+            assertEquals(issueItemList.get(i).getIssueItemPK().getIssueId(), issueNoteDTO.getId());
+            assertEquals(issueItemList.get(i).getIssueItemPK().getIsbn(), issueNoteDTO.getBooks().get(i));
+        }
     }
 }
