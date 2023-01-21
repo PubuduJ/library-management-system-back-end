@@ -48,6 +48,6 @@ public class Converter {
     }
 
     public Return toReturnEntity(ReturnItemDTO returnItemDTO) {
-        return null;
+        return new Return(Date.valueOf(LocalDate.now()), returnItemDTO.getIssueNoteId(), returnItemDTO.getIsbn());
     }
 }
