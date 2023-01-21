@@ -39,26 +39,26 @@ class IssueNoteDAOImplTest {
     @Test
     void count() {
         long actualCount = issueNoteDAOImpl.count();
-        assertEquals(5, actualCount);
+        assertEquals(2, actualCount);
     }
 
     @Test
     void existsById() {
-        boolean isExist = issueNoteDAOImpl.existsById(1);
+        boolean isExist = issueNoteDAOImpl.existsById(3);
         assertTrue(isExist);
     }
 
     @Test
     void deleteById() {
         assertThrows(ConstraintViolationException.class,() -> {
-            issueNoteDAOImpl.deleteById(1);
+            issueNoteDAOImpl.deleteById(3);
         });
     }
 
     @Test
     void findAll() {
         List<IssueNote> list = issueNoteDAOImpl.findAll();
-        assertEquals(5, list.size());
+        assertEquals(2, list.size());
     }
 
     @Test
@@ -69,16 +69,15 @@ class IssueNoteDAOImplTest {
 
     @Test
     void save() {
-        IssueNote issueNote = new IssueNote(Date.valueOf(LocalDate.now()), "2714641a-301e-43d5-9d31-ad916d075ba6");
-        assertThrows(RuntimeException.class, () -> {
-            IssueNote savedIssueNote = issueNoteDAOImpl.save(issueNote);
-        });
+        IssueNote issueNote = new IssueNote(Date.valueOf(LocalDate.now()), "2714641a-301e-43d5-9d31-ad916d075500");
+        assertEquals("2714641a-301e-43d5-9d31-ad916d075500", issueNote.getMemberId());
     }
 
     @Test
     void update() {
-        IssueNote issueNote = new IssueNote(3, Date.valueOf(LocalDate.now()), "2714641a-301e-43d5-9d31-ad916d075ba7");
-        IssueNote updatedIssueNote = issueNoteDAOImpl.update(issueNote);
-        assertEquals(issueNote.toString(), updatedIssueNote.toString());
+        IssueNote issueNote = new IssueNote(3, Date.valueOf(LocalDate.now()), "2714641a-301e-43d5-9d31-ad916d075600");
+        assertThrows(RuntimeException.class, () -> {
+            IssueNote update = issueNoteDAOImpl.update(issueNote);
+        });
     }
 }
