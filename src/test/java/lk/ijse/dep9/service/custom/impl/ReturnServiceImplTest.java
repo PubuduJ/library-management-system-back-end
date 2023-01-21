@@ -1,5 +1,7 @@
 package lk.ijse.dep9.service.custom.impl;
 
+import lk.ijse.dep9.dto.ReturnDTO;
+import lk.ijse.dep9.dto.ReturnItemDTO;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +14,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -37,6 +40,9 @@ class ReturnServiceImplTest {
 
     @Test
     void updateReturnStatus() {
-
+        ArrayList<ReturnItemDTO> returnItems = new ArrayList<>();
+        returnItems.add(new ReturnItemDTO(3, "978-3-16-148410-1"));
+        ReturnDTO returnDTO = new ReturnDTO("104ccff3-c584-4782-a582-8a06479b4600", returnItems);
+        returnServiceImpl.updateReturnStatus(returnDTO);
     }
 }

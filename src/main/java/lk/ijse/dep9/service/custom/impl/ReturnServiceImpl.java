@@ -55,14 +55,17 @@ public class ReturnServiceImpl implements ReturnService {
         catch (Throwable t) {
             try {
                 ConnectionUtil.getConnection().rollback();
-            } catch (SQLException e) {
+                throw new RuntimeException(t);
+            }
+            catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
         finally {
             try {
                 ConnectionUtil.getConnection().setAutoCommit(true);
-            } catch (SQLException e) {
+            }
+            catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
