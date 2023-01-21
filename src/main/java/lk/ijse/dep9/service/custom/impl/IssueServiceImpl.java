@@ -62,13 +62,13 @@ public class IssueServiceImpl implements IssueService {
             }
             /* Check whether a book (in the issue note) has been already issued to this member */
             if (queryDAO.isAlreadyIssued(isbn, issueNoteDTO.getMemberId())) {
-                throw new AlreadyIssuedException("Book: " + isbn + " has been already issued to the same member"); // Check
+                throw new AlreadyIssuedException("Book: " + isbn + " has been already issued to the same member");
             }
         }
         /* Check how many books can be issued for this member (maximum = 3) */
         Integer availableLimit = queryDAO.availableBookLimit(issueNoteDTO.getMemberId()).get();
         if (availableLimit < issueNoteDTO.getBooks().size()) {
-            throw new LimitExceedException("Member's book limit has been exceeded"); // Check
+            throw new LimitExceedException("Member's book limit has been exceeded");
         }
 
         /* Begin transactions */
