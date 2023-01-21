@@ -41,44 +41,44 @@ class BookDAOImplTest {
     @Test
     void count() {
         long actualCount = bookDAOImpl.count();
-        assertEquals(9, actualCount);
+        assertEquals(8, actualCount);
     }
 
     @Test
     void existsById() {
-        boolean isExist = bookDAOImpl.existsById("1234-1234");
+        boolean isExist = bookDAOImpl.existsById("978-3-16-148410-0");
         assertTrue(isExist);
     }
 
     @Test
     void deleteById() {
         assertThrows(ConstraintViolationException.class,() -> {
-            bookDAOImpl.deleteById("1234-1234");
+            bookDAOImpl.deleteById("978-3-16-148410-0");
         });
     }
 
     @Test
     void findAll() {
         List<Book> list = bookDAOImpl.findAll();
-        assertEquals(9, list.size());
+        assertEquals(8, list.size());
     }
 
     @Test
     void findById() {
-        Optional<Book> book = bookDAOImpl.findById("1234-4567");
+        Optional<Book> book = bookDAOImpl.findById("978-3-16-148410-0");
         assertTrue(book.isPresent());
     }
 
     @Test
     void save() {
-        Book book = new Book("7456-1010", "Programming fundamentals", "James Fowler", 4);
+        Book book = new Book("978-3-16-148410-8", "Programming Fundamentals", "John Carter", 4);
         Book savedBook = bookDAOImpl.save(book);
         assertEquals(book.toString(), savedBook.toString());
     }
 
     @Test
     void update() {
-        Book book = new Book("1234-7891", "Clean update codes", "Robert James", 5);
+        Book book = new Book("978-3-16-148410-0", "Modern Architecture", "Robert James", 5);
         Book updatedBook = bookDAOImpl.update(book);
         assertEquals(book.toString(), updatedBook.toString());
     }
@@ -91,7 +91,7 @@ class BookDAOImplTest {
 
     @Test
     void findBooksByQuery() {
-        List<Book> books = bookDAOImpl.findBooksByQuery("SQL");
+        List<Book> books = bookDAOImpl.findBooksByQuery("Clean Code");
         assertEquals(1, books.size());
     }
 
