@@ -72,7 +72,7 @@ class ConverterTest {
         books.add("7896-5632");
         books.add("8542-8963");
         books.add("0213-4523");
-        IssueNoteDTO issueNoteDTO = new IssueNoteDTO(1, LocalDate.now(), "104ccff3-c584-4782-a582-8a06479b46f6", books);
+        IssueNoteDTO issueNoteDTO = new IssueNoteDTO(0, LocalDate.now(), "104ccff3-c584-4782-a582-8a06479b46f6", books);
         IssueNote issueNote = converter.toIssueNoteEntity(issueNoteDTO);
         assertEquals(issueNote.getId(), issueNoteDTO.getId());
         assertEquals(issueNote.getDate().toString(), issueNoteDTO.getDate().toString());
