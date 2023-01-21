@@ -102,7 +102,7 @@ public class BookDAOImpl implements BookDAO {
     }
 
     @Override
-    public Book save(Book book) throws ConstraintViolationException {
+    public Book save(Book book) {
         try {
             PreparedStatement stm = connection.prepareStatement("INSERT INTO Book (isbn, title, author, copies) VALUES (?, ?, ?, ?)");
             stm.setString(1, book.getIsbn());
@@ -122,7 +122,7 @@ public class BookDAOImpl implements BookDAO {
     }
 
     @Override
-    public Book update(Book book) throws ConstraintViolationException {
+    public Book update(Book book) {
         try {
             PreparedStatement stm = connection.prepareStatement("UPDATE Book SET title=?, author=?, copies=? WHERE isbn=?");
             stm.setString(1, book.getTitle());

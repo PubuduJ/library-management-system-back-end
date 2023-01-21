@@ -100,4 +100,10 @@ class MemberDAOImplTest {
         List<Member> membersByQuery = memberDAOImpl.findMembersByQuery("Tharindu", 5, 1);
         assertEquals(1, membersByQuery.size());
     }
+
+    @Test
+    void existsByContact() {
+        boolean isExist = memberDAOImpl.existsByContact("078-1234567");
+        assertTrue(isExist);
+    }
 }

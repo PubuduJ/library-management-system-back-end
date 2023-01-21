@@ -100,7 +100,7 @@ public class IssueItemDAOImpl implements IssueItemDAO {
     }
 
     @Override
-    public IssueItem save(IssueItem issueItem) throws ConstraintViolationException {
+    public IssueItem save(IssueItem issueItem) {
         try {
             PreparedStatement stm = connection.prepareStatement("INSERT INTO IssueItem (issue_id, isbn) VALUES (?, ?)");
             stm.setInt(1, issueItem.getIssueItemPK().getIssueId());
@@ -118,7 +118,7 @@ public class IssueItemDAOImpl implements IssueItemDAO {
     }
 
     @Override
-    public IssueItem update(IssueItem issueItem) throws ConstraintViolationException {
+    public IssueItem update(IssueItem issueItem) {
         /* Primary key cannot update */
         return null;
     }

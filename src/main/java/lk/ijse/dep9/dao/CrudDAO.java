@@ -19,8 +19,8 @@ public interface CrudDAO<T extends SuperEntity, ID extends Serializable> extends
 
     Optional<T> findById(ID PK);
 
-    T save(T entity) throws ConstraintViolationException;
+    T save(T entity);
 
-    T update(T entity) throws ConstraintViolationException;
+    T update(T entity);
 
 }

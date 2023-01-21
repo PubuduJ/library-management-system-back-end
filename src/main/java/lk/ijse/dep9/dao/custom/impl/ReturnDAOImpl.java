@@ -102,7 +102,7 @@ public class ReturnDAOImpl implements ReturnDAO {
     }
 
     @Override
-    public Return save(Return aReturn) throws ConstraintViolationException {
+    public Return save(Return aReturn) {
         try {
             PreparedStatement stm = connection.prepareStatement("INSERT INTO `Return` (date, issue_id, isbn) VALUES (?, ?, ?)");
             stm.setDate(1, aReturn.getDate());
@@ -121,7 +121,7 @@ public class ReturnDAOImpl implements ReturnDAO {
     }
 
     @Override
-    public Return update(Return aReturn) throws ConstraintViolationException {
+    public Return update(Return aReturn) {
         try {
             PreparedStatement stm = connection.prepareStatement("UPDATE `Return` SET date = ? WHERE issue_id=? AND isbn=?");
             stm.setDate(1, aReturn.getDate());

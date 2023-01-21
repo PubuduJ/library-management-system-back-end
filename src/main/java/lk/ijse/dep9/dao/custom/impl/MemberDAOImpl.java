@@ -102,7 +102,7 @@ public class MemberDAOImpl implements MemberDAO {
     }
 
     @Override
-    public Member save(Member member) throws ConstraintViolationException {
+    public Member save(Member member) {
         try {
             PreparedStatement stm = connection.prepareStatement("INSERT INTO Member (id, name, address, contact) VALUES (?, ?, ?, ?)");
             stm.setString(1, member.getId());
@@ -122,7 +122,7 @@ public class MemberDAOImpl implements MemberDAO {
     }
 
     @Override
-    public Member update(Member member) throws ConstraintViolationException {
+    public Member update(Member member) {
         try {
             PreparedStatement stm = connection.prepareStatement("UPDATE Member SET name=?, address=?, contact=? WHERE id=?");
             stm.setString(1, member.getName());
@@ -220,6 +220,14 @@ public class MemberDAOImpl implements MemberDAO {
 
     @Override
     public boolean existsByContact(String contact) {
-        return false;
+        try{
+            PreparedStatement stm = connection.prepareStatement("SELECT * FROM Member WHERE contact = ?");
+            stm.setString(1, contact);
+            ResultSet rst = stm.executeQuery();
+            return rst.next();
+        }
+        catch (SQLException e){
+            throw new RuntimeException(e);
+        }
     }
 }

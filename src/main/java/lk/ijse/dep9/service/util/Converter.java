@@ -1,12 +1,7 @@
 package lk.ijse.dep9.service.util;
 
-import lk.ijse.dep9.dto.BookDTO;
-import lk.ijse.dep9.dto.IssueNoteDTO;
-import lk.ijse.dep9.dto.MemberDTO;
-import lk.ijse.dep9.entity.Book;
-import lk.ijse.dep9.entity.IssueItem;
-import lk.ijse.dep9.entity.IssueNote;
-import lk.ijse.dep9.entity.Member;
+import lk.ijse.dep9.dto.*;
+import lk.ijse.dep9.entity.*;
 import org.modelmapper.ModelMapper;
 
 import java.sql.Date;
@@ -17,8 +12,8 @@ public class Converter {
 
     private ModelMapper modelMapper;
 
-    public Converter(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
+    public Converter() {
+        this.modelMapper = new ModelMapper();
     }
 
     public BookDTO toBookDTO(Book book) {
@@ -49,5 +44,9 @@ public class Converter {
             issueItemList.add(issueItem);
         }
         return issueItemList;
+    }
+
+    public Return toReturnEntity(ReturnItemDTO returnItemDTO) {
+        return null;
     }
 }

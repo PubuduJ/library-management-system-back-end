@@ -97,7 +97,7 @@ public class IssueNoteDAOImpl implements IssueNoteDAO {
     }
 
     @Override
-    public IssueNote save(IssueNote issueNote) throws ConstraintViolationException {
+    public IssueNote save(IssueNote issueNote) {
         try {
             PreparedStatement stm = connection.prepareStatement("INSERT INTO IssueNote (date, member_id) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
             stm.setDate(1, issueNote.getDate());
@@ -119,7 +119,7 @@ public class IssueNoteDAOImpl implements IssueNoteDAO {
     }
 
     @Override
-    public IssueNote update(IssueNote issueNote) throws ConstraintViolationException {
+    public IssueNote update(IssueNote issueNote) {
         try {
             PreparedStatement stm = connection.prepareStatement("UPDATE IssueNote SET date=?, member_id=? WHERE id=?");
             stm.setDate(1, issueNote.getDate());

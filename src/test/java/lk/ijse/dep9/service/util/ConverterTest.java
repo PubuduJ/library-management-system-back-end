@@ -23,7 +23,7 @@ class ConverterTest {
 
     @BeforeEach
     void setUp() {
-        converter = new Converter(new ModelMapper());
+        converter = new Converter();
     }
 
     @Test
