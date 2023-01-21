@@ -42,7 +42,7 @@ class BookServiceImplTest {
     @Test
     void getAllBooks() {
         List<BookDTO> allBooks = bookServiceImpl.getAllBooks();
-        assertEquals(9, allBooks.size());
+        assertEquals(8, allBooks.size());
     }
 
     @Test
@@ -65,14 +65,14 @@ class BookServiceImplTest {
 
     @Test
     void getBookInfo() {
-        BookDTO bookInfo = bookServiceImpl.getBookInfo("1234-7891");
-        assertEquals("1234-7891", bookInfo.getIsbn());
+        BookDTO bookInfo = bookServiceImpl.getBookInfo("978-3-16-148410-0");
+        assertEquals("978-3-16-148410-0", bookInfo.getIsbn());
     }
 
     @Test
     void addNewBook() {
-        BookDTO bookDTO1 = new BookDTO("8563-5236", "Python fundamentals", "Mike", 5);
-        BookDTO bookDTO2 = new BookDTO("1234-1234", "Python fundamentals", "Mike", 5);
+        BookDTO bookDTO1 = new BookDTO("978-3-16-148410-8", "Java Basics", "James", 5);
+        BookDTO bookDTO2 = new BookDTO("978-3-16-148410-4", "Python fundamentals", "Mike", 3);
         BookDTO addedBook1 = bookServiceImpl.addNewBook(bookDTO1);
         assertEquals(bookDTO1.getIsbn(), addedBook1.getIsbn());
         assertEquals(bookDTO1.getTitle(), addedBook1.getTitle());
@@ -85,11 +85,11 @@ class BookServiceImplTest {
 
     @Test
     void updateBookDetails() {
-        BookDTO bookDTO1 = new BookDTO("8563-0001", "Python fundamentals", "Mike", 5);
-        BookDTO bookDTO2 = new BookDTO("1234-7891", "MongoDB specification", "Jim", 2);
+        BookDTO bookDTO1 = new BookDTO("978-3-16-148410-9", "Python Fundamentals", "Mike", 5);
         assertThrows(NotFoundException.class, () -> {
             BookDTO updatedBook1 = bookServiceImpl.updateBookDetails(bookDTO1);
         });
+        BookDTO bookDTO2 = new BookDTO("978-3-16-148410-1", "MongoDB Specification", "Jim", 2);
         BookDTO updatedBook2 = bookServiceImpl.updateBookDetails(bookDTO2);
         assertEquals(bookDTO2.getIsbn(), updatedBook2.getIsbn());
         assertEquals(bookDTO2.getTitle(), updatedBook2.getTitle());
