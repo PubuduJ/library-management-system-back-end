@@ -46,14 +46,14 @@ class MemberDAOImplTest {
 
     @Test
     void existsById() {
-        boolean isExist = memberDAOImpl.existsById("104ccff3-c584-4782-a582-8a06479b46f6");
+        boolean isExist = memberDAOImpl.existsById("104ccff3-c584-4782-a582-8a06479b4600");
         assertTrue(isExist);
     }
 
     @Test
     void deleteById() {
         assertThrows(ConstraintViolationException.class,() -> {
-            memberDAOImpl.deleteById("104ccff3-c584-4782-a582-8a06479b46f6");
+            memberDAOImpl.deleteById("104ccff3-c584-4782-a582-8a06479b4600");
         });
     }
 
@@ -65,20 +65,20 @@ class MemberDAOImplTest {
 
     @Test
     void findById() {
-        Optional<Member> member = memberDAOImpl.findById("2714641a-301e-43d5-9d31-ad916d075ba6");
+        Optional<Member> member = memberDAOImpl.findById("104ccff3-c584-4782-a582-8a06479b4600");
         assertTrue(member.isPresent());
     }
 
     @Test
     void save() {
-        Member member = new Member("2714641a-301e-43d5-9d31-ad916d075ba9", "Pubudu Janith", "Horana", "077-4523698");
+        Member member = new Member("104ccff3-c584-4782-a582-8a06479b4900", "Nuwan Sampath", "Mathugama", "078-8512369");
         Member savedMember = memberDAOImpl.save(member);
         assertEquals(member.toString(), savedMember.toString());
     }
 
     @Test
     void update() {
-        Member member = new Member("2714641a-301e-43d5-9d31-ad916d075ba7", "Supun Silva", "Moratuwa", "071-4523698");
+        Member member = new Member("104ccff3-c584-4782-a582-8a06479b4600", "Supun Silva", "Moratuwa", "071-4523698");
         Member updatedMember = memberDAOImpl.update(member);
         assertEquals(member.toString(), updatedMember.toString());
     }
@@ -91,19 +91,19 @@ class MemberDAOImplTest {
 
     @Test
     void findMembersByQuery() {
-        List<Member> members = memberDAOImpl.findMembersByQuery("Tharindu");
+        List<Member> members = memberDAOImpl.findMembersByQuery("Pubudu");
         assertEquals(1, members.size());
     }
 
     @Test
     void testFindMembersByQuery() {
-        List<Member> membersByQuery = memberDAOImpl.findMembersByQuery("Tharindu", 5, 1);
+        List<Member> membersByQuery = memberDAOImpl.findMembersByQuery("Pubudu", 5, 1);
         assertEquals(1, membersByQuery.size());
     }
 
     @Test
     void existsByContact() {
-        boolean isExist = memberDAOImpl.existsByContact("078-1234567");
+        boolean isExist = memberDAOImpl.existsByContact("071-7845123");
         assertTrue(isExist);
     }
 }
