@@ -5,6 +5,7 @@ import lk.ijse.dep9.entity.*;
 import org.modelmapper.ModelMapper;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class Converter {
     }
 
     public IssueNote toIssueNoteEntity(IssueNoteDTO issueNoteDTO) {
-        return new IssueNote(issueNoteDTO.getId(), Date.valueOf(issueNoteDTO.getDate()),issueNoteDTO.getMemberId());
+        return new IssueNote(0, Date.valueOf(LocalDate.now()),issueNoteDTO.getMemberId());
     }
 
     public List<IssueItem> toIssueItemEntityList(IssueNoteDTO issueNoteDTO) {

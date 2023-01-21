@@ -38,6 +38,12 @@ CREATE TABLE `IssueNote` (
                              PRIMARY KEY (`id`),
                              CONSTRAINT `IssueNote_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `Member` (`id`)
 );
+# INSERT INTO `IssueNote`
+# VALUES (1,'2022-11-14','2714641a-301e-43d5-9d31-ad916d075ba7'),
+#        (3,'2022-11-14','2714641a-301e-43d5-9d31-ad916d075ba7'),
+#        (8,'2022-11-15','2714641a-301e-43d5-9d31-ad916d075ba7'),
+#        (9,'2022-11-15','104ccff3-c584-4782-a582-8a06479b46f6'),
+#        (10,'2022-11-15','104ccff3-c584-4782-a582-8a06479b46f6');
 
 DROP TABLE IF EXISTS `IssueItem`;
 CREATE TABLE `IssueItem` (
@@ -47,6 +53,16 @@ CREATE TABLE `IssueItem` (
                              CONSTRAINT `IssueItem_ibfk_1` FOREIGN KEY (`issue_id`) REFERENCES `IssueNote` (`id`),
                              CONSTRAINT `IssueItem_ibfk_2` FOREIGN KEY (`isbn`) REFERENCES `Book` (`isbn`)
 );
+# INSERT INTO `IssueItem`
+# VALUES (3,'1234-1234'),
+#        (8,'1234-4567'),
+#        (9,'1234-4567'),
+#        (1,'1234-7891'),
+#        (3,'1234-7891'),
+#        (10,'1234-7891'),
+#        (8,'1234-9874'),
+#        (1,'4567-4567'),
+#        (3,'7891-1234');
 
 DROP TABLE IF EXISTS `Return`;
 CREATE TABLE `Return` (
@@ -56,3 +72,6 @@ CREATE TABLE `Return` (
                           PRIMARY KEY (`issue_id`,`isbn`),
                           CONSTRAINT `Return_ibfk_1` FOREIGN KEY (`issue_id`, `isbn`) REFERENCES `IssueItem` (`issue_id`, `isbn`)
 );
+# INSERT INTO `Return`
+# VALUES ('2022-11-14',1,'4567-4567'),
+#        ('2022-11-15',10,'1234-7891');

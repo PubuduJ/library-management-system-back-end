@@ -4,14 +4,19 @@ import lk.ijse.dep9.dao.DAOFactory;
 import lk.ijse.dep9.dao.DAOTypes;
 import lk.ijse.dep9.dao.custom.*;
 import lk.ijse.dep9.dto.IssueNoteDTO;
+import lk.ijse.dep9.entity.IssueItem;
+import lk.ijse.dep9.entity.IssueNote;
 import lk.ijse.dep9.service.custom.IssueService;
 import lk.ijse.dep9.service.exception.AlreadyIssuedException;
 import lk.ijse.dep9.service.exception.LimitExceedException;
 import lk.ijse.dep9.service.exception.NotAvailableException;
 import lk.ijse.dep9.service.exception.NotFoundException;
 import lk.ijse.dep9.service.util.Converter;
+import lk.ijse.dep9.util.ConnectionUtil;
 
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 public class IssueServiceImpl implements IssueService {
@@ -35,6 +40,8 @@ public class IssueServiceImpl implements IssueService {
         issueItemDAO = DAOFactory.getInstance().getDAO(connection, DAOTypes.ISSUE_ITEM);
         queryDAO = DAOFactory.getInstance().getDAO(connection, DAOTypes.QUERY);
         converter = new Converter();
+        /* Set the connection */
+        ConnectionUtil.setConnection(connection);
     }
 
     @Override
@@ -51,20 +58,51 @@ public class IssueServiceImpl implements IssueService {
             /* Check the availability of the book */
             Integer availableCopies = queryDAO.getAvailableBookCopies(isbn).get();
             if (availableCopies == 0) {
-                throw new NotAvailableException("Book: " + isbn + " not available at the moment");
+                throw new NotAvailableException("Isbn no: " + isbn + " book is not available at the moment");
             }
             /* Check whether a book (in the issue note) has been already issued to this member */
             if (queryDAO.isAlreadyIssued(isbn, issueNoteDTO.getMemberId())) {
-                throw new AlreadyIssuedException("Book: " + isbn + " has been already issued to the same member");
+                throw new AlreadyIssuedException("Book: " + isbn + " has been already issued to the same member"); // Check
             }
         }
         /* Check how many books can be issued for this member (maximum = 3) */
         Integer availableLimit = queryDAO.availableBookLimit(issueNoteDTO.getMemberId()).get();
         if (availableLimit < issueNoteDTO.getBooks().size()) {
-            throw new LimitExceedException("Member's book limit has been exceeded");
+            throw new LimitExceedException("Member's book limit has been exceeded"); // Check
         }
 
         /* Begin transactions */
+        try {
+            ConnectionUtil.getConnection().setAutoCommit(false);
 
+            /* Create issue note entity from IssueNoteDTO */
+            IssueNote issueNote = converter.toIssueNoteEntity(issueNoteDTO);
+            IssueNote savedIssueNote = issueNoteDAO.save(issueNote);
+
+            /* Get saved issue note id (auto generated) and set it to the issue note dto */
+            int issueNoteId = savedIssueNote.getId();
+            issueNoteDTO.setId(issueNoteId);
+
+            /* Create issue item entity list from issue note dto */
+            List<IssueItem> issueItemList = converter.toIssueItemEntityList(issueNoteDTO);
+            for (IssueItem issueItem : issueItemList) {
+                issueItemDAO.save(issueItem);
+            }
+            ConnectionUtil.getConnection().commit();
+        }
+        catch (Throwable t) {
+            try {
+                ConnectionUtil.getConnection().rollback();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        finally {
+            try {
+                ConnectionUtil.getConnection().setAutoCommit(true);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }
