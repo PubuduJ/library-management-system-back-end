@@ -37,27 +37,28 @@ class QueryDAOImplTest {
 
     @Test
     void getAvailableBookCopies() {
-        Optional<Integer> actualCount = queryDAOImpl.getAvailableBookCopies("1234-1234");
+        Optional<Integer> actualCount = queryDAOImpl.getAvailableBookCopies("978-3-16-148410-1");
         Integer count = actualCount.get();
         assertEquals(1, count);
     }
 
     @Test
     void isAlreadyIssued() {
-        boolean isIssued = queryDAOImpl.isAlreadyIssued("1234-4567", "104ccff3-c584-4782-a582-8a06479b46f6");
+        boolean isIssued = queryDAOImpl.isAlreadyIssued("978-3-16-148410-3", "2714641a-301e-43d5-9d31-ad916d075700");
         assertTrue(isIssued);
     }
 
+    /* Check */
     @Test
     void availableBookLimit() {
-        Optional<Integer> bookLimit = queryDAOImpl.availableBookLimit("2714641a-301e-43d5-9d31-ad916d075ba6");
+        Optional<Integer> bookLimit = queryDAOImpl.availableBookLimit("104ccff3-c584-4782-a582-8a06479b4600");
         Integer limit = bookLimit.get();
-        assertEquals(3, limit);
+        assertEquals(2, limit);
     }
 
     @Test
     void isValidIssueItem() {
-        boolean isValid = queryDAOImpl.isValidIssueItem("2714641a-301e-43d5-9d31-ad916d075ba7", 3, "1234-1234");
+        boolean isValid = queryDAOImpl.isValidIssueItem("2714641a-301e-43d5-9d31-ad916d075700", 4, "978-3-16-148410-3");
         assertTrue(isValid);
     }
 }

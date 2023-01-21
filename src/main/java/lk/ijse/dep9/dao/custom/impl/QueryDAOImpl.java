@@ -57,12 +57,12 @@ public class QueryDAOImpl implements QueryDAO {
     @Override
     public Optional<Integer> availableBookLimit(String memberId) {
         try {
-            PreparedStatement stm = connection.prepareStatement("SELECT M.name, 3 - COUNT(R.issue_id) AS available\n" +
-                    "FROM IssueNote `IN`\n" +
-                    "INNER JOIN IssueItem II ON `IN`.id = II.issue_id\n" +
-                    "INNER JOIN `Return` R ON NOT (II.issue_id = R.issue_id and II.isbn = R.isbn)\n" +
-                    "RIGHT JOIN Member M ON `IN`.member_id = M.id\n" +
-                    "WHERE M.id = ? GROUP BY M.id");
+            PreparedStatement stm = connection.prepareStatement("SELECT M.id, M.name, 3 - COUNT(`IN`.id) as available\n" +
+                    "FROM Member M\n" +
+                    "LEFT JOIN IssueNote `IN` ON M.id = `IN`.member_id\n" +
+                    "LEFT JOIN IssueItem II ON `IN`.id = II.issue_id\n" +
+                    "LEFT JOIN `Return` R ON II.issue_id = R.issue_id AND II.isbn = R.isbn\n" +
+                    "WHERE R.date IS NULL AND M.id = ? GROUP BY M.id");
             stm.setString(1, memberId);
             ResultSet rst = stm.executeQuery();
             if (!rst.next()) return Optional.empty();

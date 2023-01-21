@@ -69,7 +69,7 @@ SELECT (B.copies - COUNT(II.isbn) + COUNT(R.isbn)) AS `available_copies`
 FROM IssueItem II
 LEFT JOIN `Return` R ON II.issue_id = R.issue_id AND II.isbn = R.isbn
 RIGHT JOIN Book B ON II.isbn = B.isbn
-WHERE B.isbn = '1234-1234'
+WHERE B.isbn = '978-3-16-148410-1'
 GROUP BY B.isbn;
 
 # Is this book previously issued to this member ?
@@ -78,19 +78,19 @@ FROM IssueItem II
 INNER JOIN `Return` R ON NOT (II.issue_id = R.issue_id AND II.isbn = R.isbn)
 INNER JOIN IssueNote `IN` ON II.issue_id = `IN`.id
 INNER JOIN Book B ON II.isbn = B.isbn
-WHERE `IN`.member_id = '104ccff3-c584-4782-a582-8a06479b46f6' AND B.isbn = '1234-1234';
+WHERE `IN`.member_id = '2714641a-301e-43d5-9d31-ad916d075700' AND B.isbn = '978-3-16-148410-3';
 
 # Available book limit
-SELECT M.name, 3 - COUNT(R.issue_id) AS available
-FROM IssueNote `IN`
-INNER JOIN IssueItem II ON `IN`.id = II.issue_id
-INNER JOIN `Return` R ON NOT (II.issue_id = R.issue_id and II.isbn = R.isbn)
-RIGHT JOIN Member M ON `IN`.member_id = M.id
-WHERE M.id = '2714641a-301e-43d5-9d31-ad916d075ba6' GROUP BY M.id;
+SELECT M.id, M.name, 3 - COUNT(`IN`.id) as available
+FROM Member M
+LEFT JOIN IssueNote `IN` ON M.id = `IN`.member_id
+LEFT JOIN IssueItem II ON `IN`.id = II.issue_id
+LEFT JOIN `Return` R ON II.issue_id = R.issue_id AND II.isbn = R.isbn
+WHERE R.date IS NULL AND M.id = '104ccff3-c584-4782-a582-8a06479b4600' GROUP BY M.id;
 
 # Is valid issue item
 SELECT *
 FROM IssueItem II
 INNER JOIN IssueNote `IN` ON II.issue_id = `IN`.id
-WHERE `IN`.member_id = ? AND II.issue_id = ? AND II.isbn = ?;
+WHERE `IN`.member_id = '2714641a-301e-43d5-9d31-ad916d075700' AND II.issue_id = 4 AND II.isbn = '978-3-16-148410-3';
 
