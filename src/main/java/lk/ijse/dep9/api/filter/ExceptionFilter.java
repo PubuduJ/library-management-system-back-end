@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lk.ijse.dep9.api.exception.ResponseStatusException;
 import lk.ijse.dep9.dto.ResponseStatusDTO;
+import lk.ijse.dep9.service.exception.*;
 
 import java.io.IOException;
 import java.util.Date;
@@ -25,8 +26,21 @@ public class ExceptionFilter extends HttpFilter {
                 t.printStackTrace();
             }
             ResponseStatusDTO statusDTO = new ResponseStatusDTO();
-
             statusDTO.setStatus(r == null ? 500 : r.getStatus());
+
+            if (t instanceof LimitExceedException ||
+                    t instanceof AlreadyReturnedException ||
+                    t instanceof AlreadyIssuedException ||
+                    t instanceof NotAvailableException) {
+                statusDTO.setStatus(400);
+            }
+            else if (t instanceof NotFoundException) {
+                statusDTO.setStatus(404);
+            }
+            else if (t instanceof InUseException || t instanceof DuplicateException) {
+                statusDTO.setStatus(409);
+            }
+
             statusDTO.setMessage(t.getMessage());
             statusDTO.setPath(request.getRequestURI());
             statusDTO.setTimestamp(new Date().getTime());
