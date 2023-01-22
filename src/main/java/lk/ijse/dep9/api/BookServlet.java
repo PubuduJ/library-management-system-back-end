@@ -12,11 +12,9 @@ import lk.ijse.dep9.dto.BookDTO;
 import lk.ijse.dep9.service.ServiceFactory;
 import lk.ijse.dep9.service.ServiceTypes;
 import lk.ijse.dep9.service.custom.BookService;
-
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

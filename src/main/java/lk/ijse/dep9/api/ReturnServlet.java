@@ -13,14 +13,10 @@ import lk.ijse.dep9.dto.ReturnItemDTO;
 import lk.ijse.dep9.service.ServiceFactory;
 import lk.ijse.dep9.service.ServiceTypes;
 import lk.ijse.dep9.service.custom.ReturnService;
-
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 

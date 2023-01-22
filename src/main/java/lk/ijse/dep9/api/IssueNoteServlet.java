@@ -12,11 +12,9 @@ import lk.ijse.dep9.dto.IssueNoteDTO;
 import lk.ijse.dep9.service.ServiceFactory;
 import lk.ijse.dep9.service.ServiceTypes;
 import lk.ijse.dep9.service.custom.IssueService;
-
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
