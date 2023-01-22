@@ -84,6 +84,8 @@ public class BookServlet extends NewHttpServlet {
     private void loadBooksByPage(int size, int page, HttpServletResponse response) throws IOException {
         try (Connection connection = pool.getConnection()) {
             BookService bookService = ServiceFactory.getInstance().getService(connection, ServiceTypes.BOOK);
+            int totalBooks = bookService.getAllBooks().size();
+            response.addIntHeader("X-Total-Count", totalBooks);
             List<BookDTO> paginatedBooks = bookService.getBooksByPage(size, page);
             response.setContentType("application/json");
             JsonbBuilder.create().toJson(paginatedBooks, response.getWriter());
@@ -110,6 +112,8 @@ public class BookServlet extends NewHttpServlet {
     private void searchBooksByPage(String query, int size, int page, HttpServletResponse response) throws IOException {
         try (Connection connection = pool.getConnection()) {
             BookService bookService = ServiceFactory.getInstance().getService(connection, ServiceTypes.BOOK);
+            int searchedBookCount = bookService.findBooks(query).size();
+            response.addIntHeader("X-Total-Count", searchedBookCount);
             List<BookDTO> searchPaginatedBooks = bookService.findBooksByPage(query, size, page);
             response.setContentType("application/json");
             JsonbBuilder.create().toJson(searchPaginatedBooks, response.getWriter());

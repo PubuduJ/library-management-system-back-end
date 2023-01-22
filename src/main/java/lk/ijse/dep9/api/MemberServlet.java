@@ -82,6 +82,8 @@ public class MemberServlet extends NewHttpServlet {
     private void loadMembersByPage(int size, int page, HttpServletResponse response) throws IOException {
         try (Connection connection = pool.getConnection()) {
             MemberService memberService = ServiceFactory.getInstance().getService(connection, ServiceTypes.MEMBER);
+            int totalMembers = memberService.getAllMembers().size();
+            response.addIntHeader("X-Total-Count", totalMembers);
             List<MemberDTO> paginatedMembers = memberService.getMembersByPage(size, page);
             response.setContentType("application/json");
             JsonbBuilder.create().toJson(paginatedMembers, response.getWriter());
@@ -108,6 +110,8 @@ public class MemberServlet extends NewHttpServlet {
     private void searchMembersByPage(String query, int size, int page, HttpServletResponse response) throws IOException {
         try (Connection connection = pool.getConnection()) {
             MemberService memberService = ServiceFactory.getInstance().getService(connection, ServiceTypes.MEMBER);
+            int searchedMemberCount = memberService.findMembers(query).size();
+            response.addIntHeader("X-Total-Count", searchedMemberCount);
             List<MemberDTO> searchPaginatedMembers = memberService.findMembersByPage(query, size, page);
             response.setContentType("application/json");
             JsonbBuilder.create().toJson(searchPaginatedMembers, response.getWriter());
