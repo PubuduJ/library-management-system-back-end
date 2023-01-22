@@ -40,7 +40,7 @@ public class IssueServiceImpl implements IssueService {
         issueItemDAO = DAOFactory.getInstance().getDAO(connection, DAOTypes.ISSUE_ITEM);
         queryDAO = DAOFactory.getInstance().getDAO(connection, DAOTypes.QUERY);
         converter = new Converter();
-        /* Set the connection */
+        /* Associate the connection to the current thread */
         ConnectionUtil.setConnection(connection);
     }
 

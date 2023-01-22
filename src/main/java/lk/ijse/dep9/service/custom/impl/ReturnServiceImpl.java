@@ -27,7 +27,7 @@ public class ReturnServiceImpl implements ReturnService {
         queryDAO = DAOFactory.getInstance().getDAO(connection, DAOTypes.QUERY);
         returnDAO = DAOFactory.getInstance().getDAO(connection, DAOTypes.RETURN);
         converter = new Converter();
-        /* Set the connection */
+        /* Associate the connection to the current thread */
         ConnectionUtil.setConnection(connection);
     }
 
@@ -50,7 +50,6 @@ public class ReturnServiceImpl implements ReturnService {
                 returnDAO.save(returnEntity);
             }
             ConnectionUtil.getConnection().commit();
-            System.out.println("Yes");
         }
         catch (Throwable t) {
             try {
