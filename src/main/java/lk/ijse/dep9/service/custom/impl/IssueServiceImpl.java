@@ -17,7 +17,6 @@ import lk.ijse.dep9.util.ConnectionUtil;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 public class IssueServiceImpl implements IssueService {
 

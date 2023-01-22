@@ -9,10 +9,16 @@ import jakarta.servlet.annotation.*;
 import lk.ijse.dep9.api.util.NewHttpServlet;
 import lk.ijse.dep9.dto.MemberDTO;
 import lk.ijse.dep9.exception.ResponseStatusException;
+import lk.ijse.dep9.service.ServiceFactory;
+import lk.ijse.dep9.service.ServiceTypes;
+import lk.ijse.dep9.service.SuperService;
+import lk.ijse.dep9.service.custom.MemberService;
+
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -67,19 +73,8 @@ public class MemberServlet extends NewHttpServlet {
 
     private void loadAllMembers(HttpServletResponse response) throws IOException {
         try (Connection connection = pool.getConnection()) {
-            Statement stm = connection.createStatement();
-            ResultSet rst = stm.executeQuery("SELECT * FROM Member");
-            ArrayList<MemberDTO> allMembers = new ArrayList<>();
-
-            while (rst.next()) {
-                String id = rst.getString("id");
-                String name = rst.getString("name");
-                String address = rst.getString("address");
-                String contact = rst.getString("contact");
-                MemberDTO dto = new MemberDTO(id, name, address, contact);
-                allMembers.add(dto);
-            }
-
+            MemberService memberService = ServiceFactory.getInstance().getService(connection, ServiceTypes.MEMBER);
+            List<MemberDTO> allMembers = memberService.getAllMembers();
             response.setContentType("application/json");
             JsonbBuilder.create().toJson(allMembers, response.getWriter());
         }
@@ -90,27 +85,8 @@ public class MemberServlet extends NewHttpServlet {
 
     private void loadMembersByPage(int size, int page, HttpServletResponse response) throws IOException {
         try (Connection connection = pool.getConnection()) {
-            Statement stmCount = connection.createStatement();
-            ResultSet rstCount = stmCount.executeQuery("SELECT COUNT(id) FROM Member");
-            rstCount.next();
-            int totalMembers = rstCount.getInt(1);
-            response.addIntHeader("X-Total-Count", totalMembers);
-
-            PreparedStatement stmData = connection.prepareStatement("SELECT * FROM Member LIMIT ? OFFSET ?");
-            stmData.setInt(1, size);
-            stmData.setInt(2, (page - 1) * size);
-            ResultSet rstData = stmData.executeQuery();
-
-            ArrayList<MemberDTO> paginatedMembers = new ArrayList<>();
-            while (rstData.next()) {
-                String id = rstData.getString("id");
-                String name = rstData.getString("name");
-                String address = rstData.getString("address");
-                String contact = rstData.getString("contact");
-                MemberDTO dto = new MemberDTO(id, name, address, contact);
-                paginatedMembers.add(dto);
-            }
-
+            MemberService memberService = ServiceFactory.getInstance().getService(connection, ServiceTypes.MEMBER);
+            List<MemberDTO> paginatedMembers = memberService.getMembersByPage(size, page);
             response.setContentType("application/json");
             JsonbBuilder.create().toJson(paginatedMembers, response.getWriter());
         }
@@ -122,24 +98,8 @@ public class MemberServlet extends NewHttpServlet {
 
     private void searchMembers(String query, HttpServletResponse response) throws IOException {
         try (Connection connection = pool.getConnection()) {
-            PreparedStatement stm = connection.prepareStatement("SELECT * FROM Member WHERE id LIKE ? OR name LIKE ? OR address LIKE ? OR contact LIKE ?");
-            query = "%" + query + "%";
-            stm.setString(1, query);
-            stm.setString(2, query);
-            stm.setString(3, query);
-            stm.setString(4, query);
-            ResultSet rst = stm.executeQuery();
-
-            ArrayList<MemberDTO> searchedMembers = new ArrayList<>();
-            while (rst.next()) {
-                String id = rst.getString("id");
-                String name = rst.getString("name");
-                String address = rst.getString("address");
-                String contact = rst.getString("contact");
-                MemberDTO dto = new MemberDTO(id, name, address, contact);
-                searchedMembers.add(dto);
-            }
-
+            MemberService memberService = ServiceFactory.getInstance().getService(connection, ServiceTypes.MEMBER);
+            List<MemberDTO> searchedMembers = memberService.findMembers(query);
             response.setContentType("application/json");
             JsonbBuilder.create().toJson(searchedMembers, response.getWriter());
         }
@@ -151,36 +111,8 @@ public class MemberServlet extends NewHttpServlet {
 
     private void searchMembersByPage(String query, int size, int page, HttpServletResponse response) throws IOException {
         try (Connection connection = pool.getConnection()) {
-            query = "%" + query + "%";
-            PreparedStatement stmCount = connection.prepareStatement("SELECT COUNT(id) FROM Member WHERE id LIKE ? OR name LIKE ? OR address LIKE ? OR contact LIKE ?");
-            stmCount.setString(1, query);
-            stmCount.setString(2, query);
-            stmCount.setString(3, query);
-            stmCount.setString(4, query);
-            ResultSet rstCount = stmCount.executeQuery();
-            rstCount.next();
-            int searchedMemberCount = rstCount.getInt(1);
-            response.addIntHeader("X-Total-Count", searchedMemberCount);
-
-            PreparedStatement stmData = connection.prepareStatement("SELECT * FROM Member WHERE id LIKE ? OR name LIKE ? OR address LIKE ? OR contact LIKE ? LIMIT ? OFFSET ?");
-            stmData.setString(1,query);
-            stmData.setString(2,query);
-            stmData.setString(3,query);
-            stmData.setString(4,query);
-            stmData.setInt(5,size);
-            stmData.setInt(6,(page - 1) * size);
-            ResultSet rstData = stmData.executeQuery();
-
-            ArrayList<MemberDTO> searchPaginatedMembers = new ArrayList<>();
-            while (rstData.next()) {
-                String id = rstData.getString("id");
-                String name = rstData.getString("name");
-                String address = rstData.getString("address");
-                String contact = rstData.getString("contact");
-                MemberDTO dto = new MemberDTO(id, name, address, contact);
-                searchPaginatedMembers.add(dto);
-            }
-
+            MemberService memberService = ServiceFactory.getInstance().getService(connection, ServiceTypes.MEMBER);
+            List<MemberDTO> searchPaginatedMembers = memberService.findMembersByPage(query, size, page);
             response.setContentType("application/json");
             JsonbBuilder.create().toJson(searchPaginatedMembers, response.getWriter());
         }
@@ -192,28 +124,14 @@ public class MemberServlet extends NewHttpServlet {
 
     private void getMemberDetails(String memberId, HttpServletResponse response) throws IOException {
         try (Connection connection = pool.getConnection()) {
-            PreparedStatement stm = connection.prepareStatement("SELECT * FROM Member WHERE id=?");
-            stm.setString(1, memberId);
-            ResultSet rst = stm.executeQuery();
-
-            if (rst.next()) {
-                String id = rst.getString("id");
-                String name = rst.getString("name");
-                String address = rst.getString("address");
-                String contact = rst.getString("contact");
-                MemberDTO member = new MemberDTO(id, name, address, contact);
-
-                response.setContentType("application/json");
-                JsonbBuilder.create().toJson(member, response.getWriter());
-            }
-            else {
-                throw new ResponseStatusException(404, "Member UUID doesn't exist in the database");
-            }
+            MemberService memberService = ServiceFactory.getInstance().getService(connection, ServiceTypes.MEMBER);
+            MemberDTO memberInfo = memberService.getMemberInfo(memberId);
+            response.setContentType("application/json");
+            JsonbBuilder.create().toJson(memberInfo, response.getWriter());
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
@@ -251,22 +169,11 @@ public class MemberServlet extends NewHttpServlet {
             throw new ResponseStatusException(400, "Member contact is empty or invalid");
         }
         try (Connection connection = pool.getConnection()) {
-            memberDTO.setId(UUID.randomUUID().toString());
-            PreparedStatement stm = connection.prepareStatement("INSERT INTO Member (id, name, address, contact) VALUES (?, ?, ?, ?)");
-            stm.setString(1, memberDTO.getId());
-            stm.setString(2, memberDTO.getName());
-            stm.setString(3, memberDTO.getAddress());
-            stm.setString(4, memberDTO.getContact());
-
-            int affectedRows = stm.executeUpdate();
-            if (affectedRows == 1) {
-                response.setStatus(HttpServletResponse.SC_CREATED);
-                response.setContentType("application/json");
-                JsonbBuilder.create().toJson(memberDTO, response.getWriter());
-            }
-            else {
-                throw new ResponseStatusException(500);
-            }
+            MemberService memberService = ServiceFactory.getInstance().getService(connection, ServiceTypes.MEMBER);
+            MemberDTO savedMember = memberService.addNewMember(memberDTO);
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            response.setContentType("application/json");
+            JsonbBuilder.create().toJson(savedMember, response.getWriter());
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
@@ -291,15 +198,9 @@ public class MemberServlet extends NewHttpServlet {
 
     private void deleteMember(String memberId, HttpServletResponse response) {
         try (Connection connection = pool.getConnection()) {
-            PreparedStatement stm = connection.prepareStatement("DELETE FROM Member WHERE id=?");
-            stm.setString(1, memberId);
-            int affectedRows = stm.executeUpdate();
-            if (affectedRows == 1) {
-                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-            }
-            else {
-                throw new ResponseStatusException(404, "Member doesn't exist at the database");
-            }
+            MemberService memberService = ServiceFactory.getInstance().getService(connection, ServiceTypes.MEMBER);
+            memberService.deleteMember(memberId);
+            response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
@@ -347,22 +248,13 @@ public class MemberServlet extends NewHttpServlet {
         }
 
         try (Connection connection = pool.getConnection()) {
-            PreparedStatement stm = connection.prepareStatement("UPDATE Member SET name=?, address=?, contact=? WHERE id=?");
-            stm.setString(1, memberDTO.getName());
-            stm.setString(2, memberDTO.getAddress());
-            stm.setString(3, memberDTO.getContact());
-            stm.setString(4, memberDTO.getId());
-
-            int affectedRows = stm.executeUpdate();
-            if (affectedRows == 1) {
-                response.setStatus(HttpServletResponse.SC_CREATED);
-                response.setContentType("application/json");
-                JsonbBuilder.create().toJson(memberDTO, response.getWriter());
-            }
-            else {
-                throw new ResponseStatusException(404, "Member doesn't exist");
-            }
-        } catch (SQLException e) {
+            MemberService memberService = ServiceFactory.getInstance().getService(connection, ServiceTypes.MEMBER);
+            MemberDTO updatedMember = memberService.updateMemberDetails(memberDTO);
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            response.setContentType("application/json");
+            JsonbBuilder.create().toJson(updatedMember, response.getWriter());
+        }
+        catch (SQLException e) {
             throw new RuntimeException(e);
         }
 
