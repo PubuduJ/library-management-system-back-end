@@ -6,20 +6,17 @@ import jakarta.json.bind.JsonbException;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+import lk.ijse.dep9.api.exception.ResponseStatusException;
 import lk.ijse.dep9.api.util.NewHttpServlet;
 import lk.ijse.dep9.dto.MemberDTO;
-import lk.ijse.dep9.exception.ResponseStatusException;
 import lk.ijse.dep9.service.ServiceFactory;
 import lk.ijse.dep9.service.ServiceTypes;
-import lk.ijse.dep9.service.SuperService;
 import lk.ijse.dep9.service.custom.MemberService;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

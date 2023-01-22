@@ -1,4 +1,4 @@
-package lk.ijse.dep9.exception;
+package lk.ijse.dep9.api.exception;
 
 public class ResponseStatusException extends RuntimeException {
 
