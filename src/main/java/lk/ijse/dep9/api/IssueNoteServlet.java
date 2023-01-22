@@ -9,6 +9,9 @@ import jakarta.servlet.annotation.*;
 import lk.ijse.dep9.api.exception.ResponseStatusException;
 import lk.ijse.dep9.api.util.NewHttpServlet;
 import lk.ijse.dep9.dto.IssueNoteDTO;
+import lk.ijse.dep9.service.ServiceFactory;
+import lk.ijse.dep9.service.ServiceTypes;
+import lk.ijse.dep9.service.custom.IssueService;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -44,7 +47,7 @@ public class IssueNoteServlet extends NewHttpServlet {
         }
     }
 
-    private void createIssueNote(IssueNoteDTO issueNote, HttpServletResponse response) {
+    private void createIssueNote(IssueNoteDTO issueNote, HttpServletResponse response) throws IOException {
         if (issueNote.getMemberId() == null || !issueNote.getMemberId().matches("^[A-Fa-f\\d]{8}(-[A-Fa-f\\d]{4}){3}-[A-Fa-f\\d]{12}$")) {
             throw new ResponseStatusException(400, "Member id is empty or invalid");
         }
@@ -64,91 +67,11 @@ public class IssueNoteServlet extends NewHttpServlet {
         }
 
         try (Connection connection = pool.getConnection()) {
-            PreparedStatement stmMemberExist = connection.prepareStatement("SELECT id FROM Member WHERE id = ?");
-            stmMemberExist.setString(1, issueNote.getMemberId());
-            ResultSet rstMemberExist = stmMemberExist.executeQuery();
-            if (!rstMemberExist.next()) {
-                throw new ResponseStatusException(400, "Member doesn't exist");
-            }
-
-            PreparedStatement stmOne = connection.prepareStatement("SELECT B.isbn, B.title, B.copies, ((B.copies - COUNT(II.isbn)) > 0) AS availability\n" +
-                    "FROM IssueItem II\n" +
-                    "INNER JOIN `Return` R ON NOT (II.issue_id = R.issue_id AND II.isbn = R.isbn)\n" +
-                    "RIGHT JOIN Book B ON II.isbn = B.isbn\n" +
-                    "WHERE B.isbn = ? GROUP BY B.isbn");
-
-            PreparedStatement stmTwo = connection.prepareStatement("SELECT *, B.title\n" +
-                    "FROM IssueItem II\n" +
-                    "INNER JOIN `Return` R ON NOT (II.issue_id = R.issue_id and II.isbn = R.isbn)\n" +
-                    "INNER JOIN Book B ON II.isbn = B.isbn\n" +
-                    "INNER JOIN IssueNote `IN` ON II.issue_id = `IN`.id\n" +
-                    "WHERE `IN`.member_id = ? AND B.isbn = ?");
-
-            stmTwo.setString(1, issueNote.getMemberId());
-
-            for (String isbn : issueNote.getBooks()) {
-                stmOne.setString(1, isbn);
-                stmTwo.setString(2, isbn);
-
-                ResultSet rstOne = stmOne.executeQuery();
-                ResultSet rstTwo = stmTwo.executeQuery();
-
-                if (!rstOne.next()) throw new ResponseStatusException(400, "Book doesn't exist");
-                boolean availability = rstOne.getBoolean("availability");
-                if (!availability) throw new ResponseStatusException(400, "ISBN: " + isbn + " book is not available at the moment");
-                if (rstTwo.next()) throw new ResponseStatusException(400, "Book has been already issued to a member");
-            }
-
-            PreparedStatement stmAvailable = connection.prepareStatement("SELECT M.name, 3 - COUNT(R.issue_id) AS available\n" +
-                    "FROM IssueNote `IN`\n" +
-                    "INNER JOIN IssueItem II ON `IN`.id = II.issue_id\n" +
-                    "INNER JOIN `Return` R ON NOT (II.issue_id = R.issue_id and II.isbn = R.isbn)\n" +
-                    "RIGHT JOIN Member M on `IN`.member_id = M.id\n" +
-                    "WHERE M.id = ? GROUP BY M.id");
-            stmAvailable.setString(1,issueNote.getMemberId());
-            ResultSet rstAvailable = stmAvailable.executeQuery();
-            rstAvailable.next();
-            int available = rstAvailable.getInt("available");
-            if (issueNote.getBooks().size() > available) throw new ResponseStatusException(400, "Member can borrow only " + available + " books");
-
-            /* Begin transactions */
-            try {
-                connection.setAutoCommit(false);
-                PreparedStatement stmIssueNote = connection.prepareStatement("INSERT INTO IssueNote (date, member_id) VALUES (?, ?)",
-                        Statement.RETURN_GENERATED_KEYS);
-                stmIssueNote.setDate(1, Date.valueOf(LocalDate.now()));
-                stmIssueNote.setString(2, issueNote.getMemberId());
-                if (stmIssueNote.executeUpdate() != 1) {
-                    throw new SQLException("Fail to insert the issue note");
-                }
-                ResultSet generatedKeys = stmIssueNote.getGeneratedKeys();
-                generatedKeys.next();
-                int issueNoteId = generatedKeys.getInt(1);
-
-                PreparedStatement stmIssueItem = connection.prepareStatement("INSERT INTO IssueItem (issue_id, isbn) VALUES (?, ?)");
-                stmIssueItem.setInt(1, issueNoteId);
-                for (String isbn : issueNote.getBooks()) {
-                    stmIssueItem.setString(2, isbn);
-                    if (stmIssueItem.executeUpdate() != 1) {
-                        throw new SQLException("Fail to insert an issue item");
-                    }
-                }
-
-                connection.commit();
-
-                issueNote.setId(issueNoteId);
-                issueNote.setDate(LocalDate.now());
-                response.setStatus(HttpServletResponse.SC_CREATED);
-                response.setContentType("application/json");
-                JsonbBuilder.create().toJson(issueNote, response.getWriter());
-            }
-            catch (Throwable t) {
-                connection.rollback();
-                throw new RuntimeException(t);
-            }
-            finally {
-                connection.setAutoCommit(true);
-            }
+            IssueService issueService = ServiceFactory.getInstance().getService(connection, ServiceTypes.ISSUE);
+            issueService.placeNewIssueNote(issueNote);
+            response.setContentType("application/json");
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            JsonbBuilder.create().toJson(issueNote, response.getWriter());
         }
         catch (SQLException e) {
             throw new RuntimeException(e);

@@ -72,10 +72,7 @@ class MemberServiceImplTest {
     @Test
     void addNewMember() {
         MemberDTO memberDTO = new MemberDTO(null, "Kasun", "Kaluthara", "071-5623698");
-        MemberDTO savedMember = memberServiceImpl.addNewMember(memberDTO);
-        assertEquals(memberDTO.getName(), savedMember.getName());
-        assertEquals(memberDTO.getAddress(), savedMember.getAddress());
-        assertEquals(memberDTO.getContact(), savedMember.getContact());
+        memberServiceImpl.addNewMember(memberDTO);
     }
 
     @Test
@@ -89,10 +86,6 @@ class MemberServiceImplTest {
     @Test
     void updateMemberDetails() {
         MemberDTO memberDTO = new MemberDTO("2714641a-301e-43d5-9d31-ad916d075700", "Lilan Sachintha", "Rathmalana", "071-5623698");
-        MemberDTO updatedMember = memberServiceImpl.updateMemberDetails(memberDTO);
-        assertEquals(memberDTO.getId(), updatedMember.getId());
-        assertEquals(memberDTO.getName(), updatedMember.getName());
-        assertEquals(memberDTO.getAddress(), updatedMember.getAddress());
-        assertEquals(memberDTO.getContact(), updatedMember.getContact());
+        memberServiceImpl.updateMemberDetails(memberDTO);
     }
 }

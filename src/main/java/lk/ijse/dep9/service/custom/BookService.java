@@ -19,7 +19,7 @@ public interface BookService extends SuperService {
 
     BookDTO getBookInfo(String isbn) throws NotFoundException;
 
-    BookDTO addNewBook(BookDTO bookDTO) throws DuplicateException;
+    void addNewBook(BookDTO bookDTO) throws DuplicateException;
 
-    BookDTO updateBookDetails(BookDTO bookDTO) throws NotFoundException;
+    void updateBookDetails(BookDTO bookDTO) throws NotFoundException;
 }

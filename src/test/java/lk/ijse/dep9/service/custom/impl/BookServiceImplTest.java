@@ -73,13 +73,9 @@ class BookServiceImplTest {
     void addNewBook() {
         BookDTO bookDTO1 = new BookDTO("978-3-16-148410-8", "Java Basics", "James", 5);
         BookDTO bookDTO2 = new BookDTO("978-3-16-148410-4", "Python fundamentals", "Mike", 3);
-        BookDTO addedBook1 = bookServiceImpl.addNewBook(bookDTO1);
-        assertEquals(bookDTO1.getIsbn(), addedBook1.getIsbn());
-        assertEquals(bookDTO1.getTitle(), addedBook1.getTitle());
-        assertEquals(bookDTO1.getAuthor(), addedBook1.getAuthor());
-        assertEquals(bookDTO1.getCopies(), addedBook1.getCopies());
+        bookServiceImpl.addNewBook(bookDTO1);
         assertThrows(DuplicateException.class, () -> {
-            BookDTO addedBook2 = bookServiceImpl.addNewBook(bookDTO1);
+            bookServiceImpl.addNewBook(bookDTO1);
         });
     }
 
@@ -87,13 +83,9 @@ class BookServiceImplTest {
     void updateBookDetails() {
         BookDTO bookDTO1 = new BookDTO("978-3-16-148410-9", "Python Fundamentals", "Mike", 5);
         assertThrows(NotFoundException.class, () -> {
-            BookDTO updatedBook1 = bookServiceImpl.updateBookDetails(bookDTO1);
+            bookServiceImpl.updateBookDetails(bookDTO1);
         });
         BookDTO bookDTO2 = new BookDTO("978-3-16-148410-1", "MongoDB Specification", "Jim", 2);
-        BookDTO updatedBook2 = bookServiceImpl.updateBookDetails(bookDTO2);
-        assertEquals(bookDTO2.getIsbn(), updatedBook2.getIsbn());
-        assertEquals(bookDTO2.getTitle(), updatedBook2.getTitle());
-        assertEquals(bookDTO2.getAuthor(), updatedBook2.getAuthor());
-        assertEquals(bookDTO2.getCopies(), updatedBook2.getCopies());
+        bookServiceImpl.updateBookDetails(bookDTO2);
     }
 }

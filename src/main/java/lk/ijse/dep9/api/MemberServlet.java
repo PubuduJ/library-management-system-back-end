@@ -167,10 +167,10 @@ public class MemberServlet extends NewHttpServlet {
         }
         try (Connection connection = pool.getConnection()) {
             MemberService memberService = ServiceFactory.getInstance().getService(connection, ServiceTypes.MEMBER);
-            MemberDTO savedMember = memberService.addNewMember(memberDTO);
+            memberService.addNewMember(memberDTO);
             response.setStatus(HttpServletResponse.SC_CREATED);
             response.setContentType("application/json");
-            JsonbBuilder.create().toJson(savedMember, response.getWriter());
+            JsonbBuilder.create().toJson(memberDTO, response.getWriter());
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
@@ -246,10 +246,10 @@ public class MemberServlet extends NewHttpServlet {
 
         try (Connection connection = pool.getConnection()) {
             MemberService memberService = ServiceFactory.getInstance().getService(connection, ServiceTypes.MEMBER);
-            MemberDTO updatedMember = memberService.updateMemberDetails(memberDTO);
+            memberService.updateMemberDetails(memberDTO);
             response.setStatus(HttpServletResponse.SC_CREATED);
             response.setContentType("application/json");
-            JsonbBuilder.create().toJson(updatedMember, response.getWriter());
+            JsonbBuilder.create().toJson(memberDTO, response.getWriter());
         }
         catch (SQLException e) {
             throw new RuntimeException(e);

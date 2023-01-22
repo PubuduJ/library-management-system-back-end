@@ -20,9 +20,9 @@ public interface MemberService extends SuperService {
 
     MemberDTO getMemberInfo(String memberId) throws NotFoundException;
 
-    MemberDTO addNewMember(MemberDTO memberDTO) throws DuplicateException;
+    void addNewMember(MemberDTO memberDTO) throws DuplicateException;
 
     void deleteMember(String memberId) throws NotFoundException, InUseException;
 
-    MemberDTO updateMemberDetails(MemberDTO memberDTO) throws NotFoundException;
+    void updateMemberDetails(MemberDTO memberDTO) throws NotFoundException;
 }

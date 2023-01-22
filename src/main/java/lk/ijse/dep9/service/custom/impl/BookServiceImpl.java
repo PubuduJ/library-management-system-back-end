@@ -79,22 +79,20 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDTO addNewBook(BookDTO bookDTO) throws DuplicateException {
+    public void addNewBook(BookDTO bookDTO) throws DuplicateException {
         if (bookDAO.existsById(bookDTO.getIsbn())) {
             throw new DuplicateException("A book already exists with this isbn number");
         }
         Book book = converter.toBookEntity(bookDTO);
-        Book savedBook = bookDAO.save(book);
-        return converter.toBookDTO(savedBook);
+        bookDAO.save(book);
     }
 
     @Override
-    public BookDTO updateBookDetails(BookDTO bookDTO) throws NotFoundException {
+    public void updateBookDetails(BookDTO bookDTO) throws NotFoundException {
         if (!bookDAO.existsById(bookDTO.getIsbn())) {
             throw new NotFoundException("Book doesn't exist");
         }
         Book book = converter.toBookEntity(bookDTO);
-        Book updatedBook = bookDAO.update(book);
-        return converter.toBookDTO(updatedBook);
+        bookDAO.update(book);
     }
 }

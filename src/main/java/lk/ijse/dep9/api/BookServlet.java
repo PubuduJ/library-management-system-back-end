@@ -172,10 +172,10 @@ public class BookServlet extends NewHttpServlet {
 
         try (Connection connection = pool.getConnection()) {
             BookService bookService = ServiceFactory.getInstance().getService(connection, ServiceTypes.BOOK);
-            BookDTO addedBook = bookService.addNewBook(bookDTO);
+            bookService.addNewBook(bookDTO);
             response.setStatus(HttpServletResponse.SC_CREATED);
             response.setContentType("application/json");
-            JsonbBuilder.create().toJson(addedBook, response.getWriter());
+            JsonbBuilder.create().toJson(bookDTO, response.getWriter());
 
         }
         catch (SQLException e) {
@@ -223,10 +223,10 @@ public class BookServlet extends NewHttpServlet {
         }
         try (Connection connection = pool.getConnection()) {
             BookService bookService = ServiceFactory.getInstance().getService(connection, ServiceTypes.BOOK);
-            BookDTO updatedBook = bookService.updateBookDetails(bookDTO);
+            bookService.updateBookDetails(bookDTO);
             response.setStatus(HttpServletResponse.SC_CREATED);
             response.setContentType("application/json");
-            JsonbBuilder.create().toJson(updatedBook, response.getWriter());
+            JsonbBuilder.create().toJson(bookDTO, response.getWriter());
         }
         catch (SQLException e) {
             throw new RuntimeException(e);

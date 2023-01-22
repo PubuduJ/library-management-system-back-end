@@ -81,14 +81,13 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberDTO addNewMember(MemberDTO memberDTO) throws DuplicateException {
+    public void addNewMember(MemberDTO memberDTO) throws DuplicateException {
         if (memberDAO.existsByContact(memberDTO.getContact())) {
             throw new DuplicateException("A member already exists with this contact number");
         }
         memberDTO.setId(UUID.randomUUID().toString());
         Member member = converter.toMemberEntity(memberDTO);
-        Member savedMember = memberDAO.save(member);
-        return converter.toMemberDTO(savedMember);
+        memberDAO.save(member);
     }
 
     @Override
@@ -104,12 +103,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public MemberDTO updateMemberDetails(MemberDTO memberDTO) throws NotFoundException {
+    public void updateMemberDetails(MemberDTO memberDTO) throws NotFoundException {
         if (!memberDAO.existsById(memberDTO.getId())) {
             throw new NotFoundException("Member doesn't exist");
         }
         Member member = converter.toMemberEntity(memberDTO);
-        Member updatedMember = memberDAO.update(member);
-        return converter.toMemberDTO(updatedMember);
+        memberDAO.update(member);
     }
 }

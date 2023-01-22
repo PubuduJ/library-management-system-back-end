@@ -10,6 +10,9 @@ import lk.ijse.dep9.api.exception.ResponseStatusException;
 import lk.ijse.dep9.api.util.NewHttpServlet;
 import lk.ijse.dep9.dto.ReturnDTO;
 import lk.ijse.dep9.dto.ReturnItemDTO;
+import lk.ijse.dep9.service.ServiceFactory;
+import lk.ijse.dep9.service.ServiceTypes;
+import lk.ijse.dep9.service.custom.ReturnService;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -70,57 +73,11 @@ public class ReturnServlet extends NewHttpServlet {
         }
 
         try (Connection connection = pool.getConnection()) {
-            PreparedStatement stmOne = connection.prepareStatement("SELECT *\n" +
-                    "FROM IssueItem II\n" +
-                    "INNER JOIN IssueNote `IN` on II.issue_id = `IN`.id\n" +
-                    "WHERE `IN`.member_id = ? AND II.issue_id = ? AND II.isbn = ?");
-            stmOne.setString(1, returnDTO.getMemberId());
-
-            PreparedStatement stmTwo = connection.prepareStatement("SELECT * FROM `Return` WHERE isbn = ? AND issue_id = ?");
-            PreparedStatement stmThree = connection.prepareStatement("INSERT INTO `Return` (date, issue_id, isbn) VALUES (?, ?, ?)");
-
-            try {
-                connection.setAutoCommit(false);
-                for (ReturnItemDTO returnItem : returnDTO.getReturnItems()) {
-                    stmOne.setInt(2, returnItem.getIssueNoteId());
-                    stmOne.setString(3, returnItem.getIsbn());
-
-                    stmTwo.setInt(1, returnItem.getIssueNoteId());
-                    stmTwo.setString(2, returnItem.getIsbn());
-
-                    if (!stmOne.executeQuery().next()) {
-                        throw new ResponseStatusException(400, String.format("Either member: %s, issue note id: %s, isbn: %s don't exist or this return item is not belong to this member",
-                                returnDTO.getMemberId(),
-                                returnItem.getIssueNoteId(),
-                                returnItem.getIsbn()));
-                    }
-                    if (stmTwo.executeQuery().next()) {
-                        throw new ResponseStatusException(400, "This " + returnItem.getIsbn() +  " have been already returned");
-                    }
-
-                    stmThree.setDate(1, Date.valueOf(LocalDate.now()));
-                    stmThree.setInt(2, returnItem.getIssueNoteId());
-                    stmThree.setString(3, returnItem.getIsbn());
-
-                    int affectedRows = stmThree.executeUpdate();
-                    if (affectedRows != 1) {
-                        throw new SQLException("Fail to insert a return item");
-                    }
-                }
-
-                connection.commit();
-                response.setStatus(HttpServletResponse.SC_CREATED);
-                response.setContentType("application/json");
-                JsonbBuilder.create().toJson(returnDTO, response.getWriter());
-            }
-            catch (Throwable t) {
-                connection.rollback();
-                if (t instanceof ResponseStatusException) throw t;
-                throw new RuntimeException(t);
-            }
-            finally {
-                connection.setAutoCommit(true);
-            }
+            ReturnService returnService = ServiceFactory.getInstance().getService(connection, ServiceTypes.RETURN);
+            returnService.updateReturnStatus(returnDTO);
+            response.setStatus(HttpServletResponse.SC_CREATED);
+            response.setContentType("application/json");
+            JsonbBuilder.create().toJson(returnDTO, response.getWriter());
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
