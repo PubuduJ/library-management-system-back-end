@@ -6,14 +6,20 @@ the **n-tier architecture** was applied to the project in order to understand an
 
 More information on the exposed web services with example test cases can be found in the 
 API documentations listed below.
-- [Members API documentation](https://documenter.getpostman.com/view/25306703/2s8ZDa224j)
-- [Books API documentation](https://documenter.getpostman.com/view/25306703/2s8ZDa229D)
-- [Issue-Notes API documentation](https://documenter.getpostman.com/view/25306703/2s8ZDa2M6F)
-- [Returns API documentation](https://documenter.getpostman.com/view/25306703/2s8ZDa2MEy)
+- [**Members API documentation**](https://documenter.getpostman.com/view/25306703/2s8ZDa224j)
+- [**Books API documentation**](https://documenter.getpostman.com/view/25306703/2s8ZDa229D)
+- [**Issue-Notes API documentation**](https://documenter.getpostman.com/view/25306703/2s8ZDa2M6F)
+- [**Returns API documentation**](https://documenter.getpostman.com/view/25306703/2s8ZDa2MEy)
 
 
 #### Highlighted features of the application,
-
+- Members are registered to the system by [**uuid**](https://en.wikipedia.org/wiki/Universally_unique_identifier), and no two members can have the same contact number.
+- Books are registered to the system by international standard book number (isbn).
+- When members take books from the library they will receive an issue note.
+- The issue note contains all the take away book ISBNs along with the member UUID.
+- Issue item can only have maximum 3 distinct ISBNs.
+- A member cannot take the same book from the system twice at the same time or at two different times (with another issue note).
+- A member can only take a maximum of 3 different books from the system. If he needs another, he must return a book that he already got.
 
 
 #### ERD of the database
