@@ -13,7 +13,7 @@ API documentations listed below.
 
 
 #### Highlighted features of the application,
-- Members are registered to the system by [**uuid**](https://en.wikipedia.org/wiki/Universally_unique_identifier), and no two members can have the same contact number.
+- Members are registered to the system by [**UUID**](https://en.wikipedia.org/wiki/Universally_unique_identifier), and no two members can have the same contact number.
 - Books are registered to the system by international standard book number (isbn).
 - When members take books from the library they will receive an issue note.
 - The issue note contains all the take away book ISBNs along with the member UUID.
@@ -21,6 +21,10 @@ API documentations listed below.
 - Issue note can only have maximum 3 distinct ISBNs.
 - A member cannot take the same book from the system twice at the same time or at two different times (with another issue note).
 - A member can only take maximum of 3 different books from the system. If he/she needs another, he/she must return a book that he/she already got.
+
+The project was tested in test directory using **h2** in-memory RDBMS.
+
+### Snapshots of the documentation
 
 
 #### ERD of the database
