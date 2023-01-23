@@ -57,7 +57,7 @@ public class IssueNoteServlet extends NewHttpServlet {
         }
         Set<String> checkDuplicates = new HashSet<>();
         for (String isbn : issueNote.getBooks()) {
-            if (isbn == null || !isbn.matches("^\\d{3}-\\d-\\d{2}-\\d{6}-\\d$")) throw new JsonbException("Invalid isbn");
+            if (isbn == null || !isbn.matches("^\\d{3}-\\d-\\d{2}-\\d{6}-\\d$")) throw new ResponseStatusException(400, "Invalid isbn");
             checkDuplicates.add(isbn);
         }
         if (checkDuplicates.size() != issueNote.getBooks().size()) {

@@ -6,6 +6,7 @@ More information on the exposed web services with example test cases can be foun
 API documentations listed below.
 - [Members API documentation](https://documenter.getpostman.com/view/25306703/2s8ZDa224j)
 - [Books API documentation](https://documenter.getpostman.com/view/25306703/2s8ZDa229D)
+- [Issue-Notes API documentation](https://documenter.getpostman.com/view/25306703/2s8ZDa2M6F)
 
 
 #### Highlighted features of the application,
