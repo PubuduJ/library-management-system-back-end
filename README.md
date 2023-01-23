@@ -24,6 +24,8 @@ API documentations listed below.
 
 The project was tested in test directory using **h2** in-memory RDBMS.
 
+Monolithic design of the project (without layered architecture) can be downloaded from [**here**](https://github.com/PubuduJ/library-management-system-back-end/releases/tag/monolithic-design).
+
 #### Few snapshots of the documentation
 <img src="assets/member-snapshot.png" alt="splash-screen" width="800px"/>
 
