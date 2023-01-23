@@ -17,9 +17,10 @@ API documentations listed below.
 - Books are registered to the system by international standard book number (isbn).
 - When members take books from the library they will receive an issue note.
 - The issue note contains all the take away book ISBNs along with the member UUID.
-- Issue item can only have maximum 3 distinct ISBNs.
+- All issue notes have unique issue id to uniquely identify them when the books are returned.
+- Issue note can only have maximum 3 distinct ISBNs.
 - A member cannot take the same book from the system twice at the same time or at two different times (with another issue note).
-- A member can only take a maximum of 3 different books from the system. If he needs another, he must return a book that he already got.
+- A member can only take maximum of 3 different books from the system. If he/she needs another, he/she must return a book that he/she already got.
 
 
 #### ERD of the database
