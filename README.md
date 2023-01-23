@@ -58,6 +58,8 @@ Monolithic design of the project (without layered architecture) can be downloade
     - yasson 2.0.4
     - mysql-connector-j 8.0.31
     - modelmapper 3.1.0
+    - logback 1.4.2
+    - slf4j 2.0.5
     - h2 2.1.212
     - junit-jupiter-api
     - junit-jupiter-engine
