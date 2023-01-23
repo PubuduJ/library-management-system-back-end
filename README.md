@@ -1,6 +1,8 @@
 # Library Management System - Back End <img src="assets/library.png" alt="drawing" width="27px"/>
 
-
+This project was initially developed as a **monolithic design**, and then 
+the **n-tier architecture** was applied to the project in order to understand and improve knowledge of software architectures. 
+**Seventeen web services** are exposed as APIs under the members, books, issue-notes and returns resources in this project.
 
 More information on the exposed web services with example test cases can be found in the 
 API documentations listed below.
