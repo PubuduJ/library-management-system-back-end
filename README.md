@@ -83,7 +83,7 @@ You can find the lms_db.sql for this project under the **resources** directory.
 This project was carried out under the guidance of the [IJSE](https://www.ijse.lk/) Direct Entry Program 9.
 
 ## Version
-v1.1.0
+v1.2.0
 
 ## License
 Copyright &copy; 2023 [Pubudu Janith](https://www.linkedin.com/in/pubudujanith94/). All Rights Reserved.<br>
