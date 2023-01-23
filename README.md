@@ -36,7 +36,7 @@ Monolithic design of the project (without layered architecture) can be downloade
 - A member requests more than 3 books.<br>
 <img src="assets/issue-note-snapshot.png" alt="splash-screen" width="800px"/>
 
-- Null return elements found in request payload.<br>
+- Null return items found in request payload.<br>
 <img src="assets/return-note-snapshot.png" alt="splash-screen" width="800px"/>
 
 
