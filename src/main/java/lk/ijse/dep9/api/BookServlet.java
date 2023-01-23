@@ -149,7 +149,7 @@ public class BookServlet extends NewHttpServlet {
                     saveNewBook(bookDTO, response);
                 }
                 catch (JsonbException e) {
-                    throw new ResponseStatusException(400, "Member JSON format is incorrect");
+                    throw new ResponseStatusException(400, "Book JSON format is incorrect");
                 }
             }
         }
@@ -205,7 +205,7 @@ public class BookServlet extends NewHttpServlet {
                 updateBook(bookDTO, response);
             }
             catch (JsonbException e) {
-                throw new ResponseStatusException(400, "Member JSON format is incorrect");
+                throw new ResponseStatusException(400, "Book JSON format is incorrect");
             }
         }
         else {

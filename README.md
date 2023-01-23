@@ -27,12 +27,16 @@ The project was tested in test directory using **h2** in-memory RDBMS.
 Monolithic design of the project (without layered architecture) can be downloaded from [**here**](https://github.com/PubuduJ/library-management-system-back-end/releases/tag/monolithic-design).
 
 #### Few snapshots of the documentation
+- An attempt to update a member that does not exist in the database.<br>
 <img src="assets/member-snapshot.png" alt="splash-screen" width="800px"/>
 
+- Send incorrect JSON in request payload.<br>
 <img src="assets/book-snapshot.png" alt="splash-screen" width="800px"/>
 
+- A member requests more than 3 books.<br>
 <img src="assets/issue-note-snapshot.png" alt="splash-screen" width="800px"/>
 
+- Null return elements found in request payload.<br>
 <img src="assets/return-note-snapshot.png" alt="splash-screen" width="800px"/>
 
 
@@ -79,7 +83,7 @@ You can find the lms_db.sql for this project under the **resources** directory.
 This project was carried out under the guidance of the [IJSE](https://www.ijse.lk/) Direct Entry Program 9.
 
 ## Version
-v1.0.0
+v1.1.0
 
 ## License
 Copyright &copy; 2023 [Pubudu Janith](https://www.linkedin.com/in/pubudujanith94/). All Rights Reserved.<br>
