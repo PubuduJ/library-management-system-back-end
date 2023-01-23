@@ -27,10 +27,12 @@ API documentations listed below.
 - MySQL Community Server 8.0.31
 - Added dependencies to pom.xml
     - jakarta.servlet-api 5.0.0
+    - jakarta.annotation-api 2.0.0
     - lombok 1.18.24
     - yasson 2.0.4
-    - jakarta.annotation-api 2.0.0
     - mysql-connector-j 8.0.31
+    - modelmapper 3.1.0
+    - h2 2.1.212
     - junit-jupiter-api
     - junit-jupiter-engine
 
