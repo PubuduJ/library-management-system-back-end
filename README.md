@@ -4,6 +4,8 @@
 
 More information on the exposed web services with example test cases can be found in the 
 API documentations listed below.
+- [Members API documentation](https://documenter.getpostman.com/view/25306703/2s8ZDa224j)
+- [Books API documentation](https://documenter.getpostman.com/view/25306703/2s8ZDa229D)
 
 
 #### Highlighted features of the application,

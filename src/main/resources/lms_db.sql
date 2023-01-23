@@ -35,8 +35,8 @@ CREATE TABLE IF NOT EXISTS IssueNote (
 );
 
 INSERT INTO IssueNote
-VALUES (3,'2023-01-10','104ccff3-c584-4782-a582-8a06479b4600'),
-       (4,'2023-01-11','2714641a-301e-43d5-9d31-ad916d075700');
+VALUES (1,'2023-01-10','104ccff3-c584-4782-a582-8a06479b4600'),
+       (2,'2023-01-11','2714641a-301e-43d5-9d31-ad916d075700');
 
 CREATE TABLE IF NOT EXISTS IssueItem (
     issue_id INT NOT NULL ,
@@ -47,10 +47,10 @@ CREATE TABLE IF NOT EXISTS IssueItem (
 );
 
 INSERT INTO IssueItem
-VALUES (3,'978-3-16-148410-0'),
-       (3,'978-3-16-148410-1'),
-       (4,'978-3-16-148410-2'),
-       (4,'978-3-16-148410-3');
+VALUES (1,'978-3-16-148410-0'),
+       (1,'978-3-16-148410-1'),
+       (2,'978-3-16-148410-2'),
+       (2,'978-3-16-148410-3');
 
 CREATE TABLE IF NOT EXISTS `Return` (
     date DATE NOT NULL ,
@@ -61,8 +61,8 @@ CREATE TABLE IF NOT EXISTS `Return` (
 );
 
 INSERT INTO `Return`
-VALUES ('2023-01-14',3,'978-3-16-148410-0'),
-       ('2023-01-15',4,'978-3-16-148410-2');
+VALUES ('2023-01-14',1,'978-3-16-148410-0'),
+       ('2023-01-15',2,'978-3-16-148410-2');
 
 # Available copies of the relevant book
 SELECT (B.copies - COUNT(II.isbn) + COUNT(R.isbn)) AS `available_copies`
