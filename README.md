@@ -24,7 +24,14 @@ API documentations listed below.
 
 The project was tested in test directory using **h2** in-memory RDBMS.
 
-### Snapshots of the documentation
+#### Few snapshots of the documentation
+<img src="assets/member-snapshot.png" alt="splash-screen" width="800px"/>
+
+<img src="assets/book-snapshot.png" alt="splash-screen" width="800px"/>
+
+<img src="assets/issue-note-snapshot.png" alt="splash-screen" width="800px"/>
+
+<img src="assets/return-note-snapshot.png" alt="splash-screen" width="800px"/>
 
 
 #### ERD of the database
