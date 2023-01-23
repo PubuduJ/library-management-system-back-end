@@ -9,10 +9,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import lk.ijse.dep9.api.exception.ResponseStatusException;
 import lk.ijse.dep9.dto.ResponseStatusDTO;
 import lk.ijse.dep9.service.exception.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.Date;
 
+@Slf4j
 public class ExceptionFilter extends HttpFilter {
 
     @Override
@@ -23,7 +25,7 @@ public class ExceptionFilter extends HttpFilter {
         catch (Throwable t) {
             ResponseStatusException r = t instanceof ResponseStatusException ? (ResponseStatusException) t : null;
             if (r == null || r.getStatus() >= 500) {
-                t.printStackTrace();
+                log.error(t.getMessage(), t);
             }
             ResponseStatusDTO statusDTO = new ResponseStatusDTO();
             statusDTO.setStatus(r == null ? 500 : r.getStatus());
